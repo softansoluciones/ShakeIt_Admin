@@ -5,15 +5,15 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
-include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Alertas.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Caja.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
 $GLOBALS['token'] = new Tokens();
-$GLOBALS['datos'] = new Alertas();
+$GLOBALS['datos'] = new Caja();
 $GLOBALS['res'] = new \stdClass();
 
 $url = $_SERVER['REQUEST_URI'];
-$urlservicios = explode("Alertas.php/", $url);
+$urlservicios = explode("Caja.php/", $url);
 
 if (count($urlservicios) > 1) {
     $urlserviciosdes = explode("?", $urlservicios[1]);
@@ -46,12 +46,12 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
             case 'GET':
         
                 if ($accion != null) {
-                    if ($accion == "alertas") {
-                        GetAlertas($param1);
+                    if ($accion == "Caja") {
+                        GetCaja();
                     } elseif ($accion == "id") {
-                        GetAlertasXId($param1);
-                    } elseif ($accion == "cantidad") {
-                        GetAlertasCantidad($param1);
+                        GetCajaXId($param1);
+                    } elseif ($accion == "sede") {
+                        GetCajaXSede($param1);
                     }else {
                         $GLOBALS['res']->Respuesta = 0;
                         $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
@@ -67,9 +67,9 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
             case 'POST':
         
                 if ($accion == "guardar") {
-                    SaveAlerta();
+                    SaveCaja();
                 } elseif ($accion == "actualizar") {
-                    UpdateAlerta();
+                    UpdateCaja($param1);
                 } else {
                     $GLOBALS['res']->Respuesta = 0;
                     $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
@@ -87,9 +87,13 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
         
             case 'DELETE':
                 
-            $GLOBALS['res']->Respuesta = 0;
-                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+            if ($accion == "eliminar") {
+                DeleteCaja($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
                 echo json_encode($GLOBALS['res']);
+            }
         
                 break;
         
@@ -105,9 +109,10 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
         echo json_encode($GLOBALS['res']);
     }
     
-function GetAlertas($usuario) {
 
-        $resultado = $GLOBALS['datos']->get_Alertas($usuario);
+    function GetCaja() {
+
+        $resultado = $GLOBALS['datos']->get_Caja($usuario);
 
         if ($resultado != 0) {
 
@@ -121,25 +126,9 @@ function GetAlertas($usuario) {
         }
 }
 
-function GetAlertasXId($id) {
+function GetCajaXId($id) {
 
-    $resultado = $GLOBALS['datos']->get_Alerta($id);
-
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
-function GetAlertasCantidad($usuario) {
-
-    $resultado = $GLOBALS['datos']->get_AlertasCant($usuario);
+    $resultado = $GLOBALS['datos']->get_CajaXId($id);
 
     if ($resultado != 0) {
 
@@ -153,13 +142,29 @@ function GetAlertasCantidad($usuario) {
     }
 }
 
-function SaveAlerta() {
+function GetCajaXSede($sede) {
 
-    $nom = $_POST['nombre'];
-    $des = $_POST['descripcion'];
-    $us = $_POST['usuarios'];
+    $resultado = $GLOBALS['datos']->get_CajaXSede($sede);
 
-        $resultado = $GLOBALS['datos']->insert_Alertas($nom, $des, $us);
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function SaveCaja() {
+
+    $val = $_POST['valor'];
+    $est = $_POST['estado'];
+    $sede = $_POST['sede'];
+
+        $resultado = $GLOBALS['datos']->insert_Caja($val, $est, $sede);
 
         if ($resultado != 0) {
 
@@ -173,9 +178,12 @@ function SaveAlerta() {
         }
 }
 
-function UpdateAlerta($id) {
+function UpdateCaja($id) {
 
-        $resultado = $GLOBALS['datos']->update_Alertas($id);
+    $val = $_POST['valor'];
+    $est = $_POST['estado'];
+    $sede = $_POST['sede'];
+        $resultado = $GLOBALS['datos']->update_Caja($id, $val, $est, $sede);
 
         if ($resultado != 0) {
 
@@ -189,9 +197,9 @@ function UpdateAlerta($id) {
         }
 }
 
-function DeleteAlerta($id) {
+function DeleteCaja($id) {
 
-        $resultado = $GLOBALS['datos']->delete_Alquiler($id);
+        $resultado = $GLOBALS['datos']->delete_Caja($id);
 
         if ($resultado != 0) {
 
@@ -203,9 +211,4 @@ function DeleteAlerta($id) {
             $GLOBALS['res']->Mensaje = "Error al eliminar información.";
             echo json_encode($GLOBALS['res']);
         }
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
-        echo json_encode($GLOBALS['res']);
-    }
 }

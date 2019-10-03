@@ -1,102 +1,207 @@
 <?php
+
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Alertas.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new Alertas();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new Alertas();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("Alertas.php/", $url);
 
-if (isset($_GET["cantidad"])) {
-
-    $entrada = $_GET["cantidad"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $us = $datosparciales[0];
-
-    $resultado = $datos->get_AlertasCant($us);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_GET["alerta"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_GET["alerta"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-
-    $resultado = $datos->get_Alerta($id);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
-    }
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
 }
 
-if (isset($_POST["insertar"])) {
-
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $nom = $datosparciales[0];
-    $des = $datosparciales[1];
-    $us = $datosparciales[2];
-
-    $resultado = $datos->insert_Alertas($nom, $des, $us);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "alertas") {
+                        GetAlertas($param1);
+                    } elseif ($accion == "id") {
+                        GetAlertaXId($param1);
+                    } elseif ($accion == "cantidad") {
+                        GetAlertasCantidad($param1);
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveAlerta();
+                } elseif ($accion == "actualizar") {
+                    UpdateAlerta($param1);
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
     }
-}
-
-if (isset($_POST["actualizar"])) {
-
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
     
-    $resultado = $datos->update_Alertas($id);
+
+    function GetAlertas($usuario) {
+
+        $resultado = $GLOBALS['datos']->get_Alertas($usuario);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetAlertaXId($id) {
+
+    $resultado = $GLOBALS['datos']->get_Alerta($id);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
+function GetAlertasCantidad($usuario) {
+
+    $resultado = $GLOBALS['datos']->get_AlertasCant($usuario);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function SaveAlerta() {
+
+    $nom = $_POST['nombre'];
+    $des = $_POST['descripcion'];
+    $us = $_POST['usuarios'];
+
+        $resultado = $GLOBALS['datos']->insert_Alertas($nom, $des, $us);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function UpdateAlerta($id) {
+
+        $resultado = $GLOBALS['datos']->update_Alertas($id);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function DeleteAlerta($id) {
+
+        $resultado = $GLOBALS['datos']->delete_Alertas($id);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}

@@ -1,4 +1,4 @@
- <?php
+<?php
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -6,139 +6,209 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Caja.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new Caja();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new Caja();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("Caja.php/", $url);
 
-if (isset($_GET["caja"])) {
-
-    $resultado = $datos->get_Caja();
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_POST["cajaxid"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_POST["cajaxid"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
+}
+
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "lista") {
+                        GetCaja();
+                    } elseif ($accion == "id") {
+                        GetCajaXId($param1);
+                    } elseif ($accion == "sede") {
+                        GetCajaXSede($param1);
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveCaja();
+                } elseif ($accion == "actualizar") {
+                    UpdateCaja($param1);
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            if ($accion == "eliminar") {
+                DeleteCaja($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                echo json_encode($GLOBALS['res']);
+            }
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
+    }
     
-    $id = $datosparciales[0];
 
-    $resultado = $datos->get_CajaXId($id);
+    function GetCaja() {
+
+        $resultado = $GLOBALS['datos']->get_Caja($usuario);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetCajaXId($id) {
+
+    $resultado = $GLOBALS['datos']->get_CajaXId($id);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["cajaxsede"])) {
+function GetCajaXSede($sede) {
 
-    $entrada = $_POST["cajaxsede"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-    
-    $sede = $datosparciales[0];
-
-    $resultado = $datos->get_CajaXSede($sede);
+    $resultado = $GLOBALS['datos']->get_CajaXSede($sede);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["insertar"])) {
+function SaveCaja() {
 
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $val = $_POST['valor'];
+    $est = $_POST['estado'];
+    $sede = $_POST['sede'];
 
-    $val = $datosparciales[0];
-    $est = $datosparciales[1];
-    $sede = $datosparciales[2];
-    
-    $resultado = $datos->insert_Caja($val, $est, $sede);
+        $resultado = $GLOBALS['datos']->insert_Caja($val, $est, $sede);
 
-    if ($resultado != 0) {
+        if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["actualizar"])) {
+function UpdateCaja($id) {
 
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $val = $_POST['valor'];
+    $est = $_POST['estado'];
+    $sede = $_POST['sede'];
+        $resultado = $GLOBALS['datos']->update_Caja($id, $val, $est, $sede);
 
-    $id = $datosparciales[0];
-    $val = $datosparciales[1];
-    $est = $datosparciales[2];
-    $sede = $datosparciales[3];
+        if ($resultado != 0) {
 
-    $resultado = $datos->update_Caja($id, $val, $est, $sede);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["eliminar"])) {
+function DeleteCaja($id) {
 
-    $entrada = $_POST["eliminar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->delete_Caja($id);
 
-    $id = $datosparciales[0];
+        if ($resultado != 0) {
 
-    $resultado = $datos->delete_Caja($id);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
-

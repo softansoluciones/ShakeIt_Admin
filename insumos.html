@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<head>
+  <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+  <script src="js/Insumos/insumosBD.js" type="text/javascript"></script>
+  <script src="js/Insumos/insumos.js" type="text/javascript"></script>
+</head>
+
+<body class="">
+  <div>
+    <ul class="nav justify-content-end optionsBar">
+      <li class="nav-item">
+        <a class="nav-link anav" href="javascript: formGuardar()">Agregar</a>
+      </li>
+    </ul>
+    <br>
+    <br>
+    <center>
+      <h4>INSUMOS</h4>
+    </center>
+    <div class="col d-flex justify-content-end">
+      <input type="text" id="filtrar" class="form-control" placeholder="Buscar Insumo..." onkeyup="buscarD('tab_InsBody');">
+    </div>
+    <hr>
+  </div>
+    <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
+      <table class="table table-borderless">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Unidad</th>
+            <th>-</th>
+            <th>-</th>
+          </tr>
+        </thead>
+        <tbody id="tab_InsBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!---- Modal Registro------->
+    <div id="ins_mod_guardar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Registro de insumos.</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="">
+              <div id="msg_alert_mod" class="alert alert-dark" role="alert" style="display: none;">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <input type="text" class="form-control" id="ins_nomg" name="ins_g" campo="Nombre De Insumo" placeholder="Nombre De Insumo" onchange='removec(this)'>
+                </div>
+                <div class="form-group col-md-4">
+                  <input type="number" class="form-control" id="ins_cantg" name="ins_g" campo="Cantidad mínima en inventario" placeholder="Cantidad mínima en inventario" onchange='removec(this)'>
+                </div>
+                <div class="form-group col-md-4">
+                  <select class="form-control" id="ins_unig" name="ins_g" campo="Unidad" onchange='removec(this)'>
+                    <option value='' selected>Seleccione Unidad</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+            <a id="insGuardar" class="btn btn_sh btn-sm" href="javascript: validarGuardar();" role="button">Guardar</a>
+            <a id="insGuardando" class="btn btn_sh btn-sm disabled" style="display: none;" href="#" role="button">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Guardando...
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!---- Modal Editar------->
+    <div id="ins_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Edición de insumos</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="">
+              <div id="msg_alert_mod" class="alert alert-dark" role="alert" style="display: none;">
+              </div>
+              <div class="form-group" style='display: none;'>
+                <input type="number" class="form-control" id="ins_ide" name="ins_e" campo="Id de insumo" placeholder="Id De Insumo" onchange='removec(this)'>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <input type="text" class="form-control" id="ins_nome" name="ins_e" campo="Nombre De Insumo" placeholder="Nombre De Insumo" onchange='removec(this)'>
+                </div>
+                <div class="form-group col-md-4">
+                  <input type="number" class="form-control" id="ins_cante" name="ins_e" campo="Cantidad mínima en inventario" placeholder="Cantidad mínima en inventario" onchange='removec(this)'>
+                </div>
+                <div class="form-group col-md-4">
+                  <select class="form-control" id="ins_unie" name="ins_e" campo="Unidad" onchange='removec(this)'>
+                    <option value='' selected>Seleccione Unidad</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+            <a id="insActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+            <button id="insActualizando" class="btn btn_sh btn-sm" type="button" disabled style="display:none;">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Guardando...
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<head>
+  <script src="js/Alertas/alertasBD.js" type="text/javascript"></script>
+  <script src="js/Alertas/alertas.js" type="text/javascript"></script>
+</head>
+
+<body class="">
+  <div>
+      <br>
+      <br>
+      <h4>ALERTAS</h4>
+    <hr>
+  </div>
+  <div class="card-columns container" id="divCards" style="overflow-y: Auto; height: calc(100% - 120px); width: calc(100% - 20px);">
+    
+  </div>
+
+  <!---- Modal Registro------->
+  <div id="alertas_mod_mostrar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
+    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="alertas_modTittle"></h5>
+        </div>
+        <div class="modal-body">
+          <p id="alertas_modDesc"></p>
+          <p class="card-text"><small class="text-muted" id="alertas_modFecha"></small></p>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Aceptar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

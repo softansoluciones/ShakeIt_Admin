@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<head>
+  <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+  <script src="js/Usuarios/usuariosBD.js" type="text/javascript"></script>
+  <script src="js/Usuarios/usuarios.js" type="text/javascript"></script>
+</head>
+
+<body class="">
+  <div>
+    <ul class="nav justify-content-end optionsBar">
+      <li class="nav-item">
+        <a class="nav-link anav" href="javascript: formGuardar()">Agregar</a>
+      </li>
+    </ul>
+    <br>
+    <br>
+    <center>
+      <h4>USUARIOS</h4>
+    </center>
+    <div class="col d-flex justify-content-end">
+      <input type="text" id="filtrar" class="form-control" placeholder="Buscar Usuario..." onkeyup="buscarD('tab_userBody');">
+    </div>
+    <hr>
+  </div>
+  <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
+    <table class="table table-borderless">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Documento</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>Teléfono</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>-</th>
+          <th>-</th>
+        </tr>
+      </thead>
+      <tbody id="tab_userBody">
+      </tbody>
+    </table>
+  </div>
+
+  <!---- Modal Registro------->
+  <div id="user_mod_guardar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Registro de usuarios.</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="">
+            <div id="msg_alert_modG" class="alert alert-dark" role="alert" style="display: none;">
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-control" id="us_docg" name="us_g" data-campo="Documento de identidad" placeholder="Documento de identidad" onchange='removec(this), verificarUs()'>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="us_nomg" name="us_g" data-campo="Nombres" placeholder="Nombres" onchange='removec(this)'>
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="us_apeg" name="us_g" data-campo="Apellidos" placeholder="Apellidos" onchange='removec(this)'>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="number" class="form-control" id="us_telg" name="us_g" data-campo="Teléfono" placeholder="Teléfono" onchange='removec(this)'>
+              </div>
+              <div class="form-group col-md-6">
+                <input type="email" class="form-control" id="us_emailg" name="us_g" data-campo="E-Mail" placeholder="E-Mail" onchange='removec(this)'>
+              </div>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="us_tipog" name="us_g" data-campo="Tipo De Usuario" onchange='removec(this)'>
+                <option value='' selected>Seleccione Tipo De Usuario</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+          <a id="usGuardar" class="btn btn_sh btn-sm" href="javascript: validarGuardar();" role="button">Guardar</a>
+          <a id="usGuardando" class="btn btn_sh btn-sm disabled" style="display: none;" href="#" role="button">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Guardando...
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!---- Modal Editar------->
+  <div id="user_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Edición de usuarios</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="">
+            <div id="msg_alert_modE" class="alert alert-dark" role="alert" style="display: none;">
+            </div>
+            <div class="form-group backText">
+              <input type="number" class="form-control" id="us_ide" name="us_e" data-campo="Id de usuario" placeholder="Id de usuario" onchange='removec(this)'>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-control" id="us_doce" name="us_e" data-campo="Documento de identidad" placeholder="Documento de identidad" onchange='removec(this)'>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="us_nome" name="us_e" data-campo="Nombres" placeholder="Nombres" onchange='removec(this)'>
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="us_apee" name="us_e" data-campo="Apellidos" placeholder="Apellidos" onchange='removec(this)'>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="number" class="form-control" id="us_tele" name="us_e" data-campo="Teléfono" placeholder="Teléfono" onchange='removec(this)'>
+              </div>
+              <div class="form-group col-md-6">
+                <input type="email" class="form-control" id="us_emaile" name="us_e" data-campo="E-Mail" placeholder="E-Mail" onchange='removec(this)'>
+              </div>
+            </div>
+            <div class="form-group backText">
+              <input type="password" class="form-control" id="us_passe" name="us_e" data-campo="Contraseña" placeholder="Contraseña" onchange='removec(this)'>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="us_tipoe" name="us_e" data-campo="Tipo De Usuario" onchange='removec(this)'>
+                <option value='' selected>Seleccione Tipo De Usuario</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="us_estadoe" name="us_e" data-campo="Estado De Usuario" onchange='removec(this)'>
+                <option value='' selected>Seleccione Estado De Usuario</option>
+              </select>
+            </div>
+            <a id="usResetPass" class="btn btn_sh btn-sm" href="javascript: reiniciarPassword();" role="button">Reiniciar Contraseña</a>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+          <a id="usActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+          <button id="usActualizando" class="btn btn_sh btn-sm" type="button" disabled style="display:none;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Guardando...
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

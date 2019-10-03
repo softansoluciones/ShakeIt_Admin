@@ -1,0 +1,13 @@
+
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [NC,L]
+
+RewriteEngine on
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^softansol.com$
+
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

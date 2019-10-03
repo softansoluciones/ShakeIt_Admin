@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<!--
+
+To change this license header, choose License Headers in Project Properties.
+
+To change this template file, choose Tools | Templates
+
+and open the template in the editor.
+
+-->
+
+
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+
+    <script src="js/Productos/productosBD.js" type="text/javascript"></script>
+
+    <script src="js/Productos/productosList.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+        <br>
+
+        <br>
+
+        <h4>PRODUCTOS</h4>
+
+        <hr>
+
+        <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 155px);">
+
+          <table class="table table-borderless">
+
+                <thead>
+
+                    <tr>
+
+                    <tr>
+
+                        <th>Codigo</th>
+
+                        <th>Nombre</th>
+
+                        <th>Nombre General</th>
+
+                        <th>Precio</th>
+
+                        <th>Categoría</th>
+
+                        <th>-</th>
+
+                        <th>-</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tab_ProBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="pro_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title" id="exampleModalLongTitle">Edición de producto</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                        <span aria-hidden="true">&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+
+
+                    <form class="">
+
+                        <div id="msg_alert_mod" class="alert alert-dark" role="alert" style="display: none;">
+
+                        </div>
+
+                        <div class="form-group" style='display: none;'>
+
+                            <input type="number" class="form-control" id="pro_ide" name="pro_e" campo="Id de producto" placeholder="Id De Producto" onchange='removec(this)'>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6">
+
+                                <input type="text" class="form-control" id="pro_nome" name="pro_e" campo="Nombre Corto" placeholder="Nombre Corto" onchange='removec(this)'>
+
+                            </div>
+
+                            <div class="form-group col-md-6">
+
+                                <input type="text" class="form-control" id="pro_nomce" name="pro_e" campo="Nombre Completo" placeholder="Nombre Completo" onchange='removec(this)'>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+
+                            <div class="form-group col-md-6">
+
+                                <input type="number" class="form-control" id="pro_prece" name="pro_e" campo="Precio" placeholder="Precio" onchange='removec(this)'>
+
+                            </div>
+
+                            <div class="form-group col-md-6">
+
+                                <select class="form-control" id="pro_cate" name="pro_e" campo="Categoría" onchange='removec(this)'>
+
+                                    <option value='' selected>Seleccione Categoría</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+
+                            <div class="form-group col-md-12">
+
+                                <textarea class="form-control" id="pro_desce" name="pro_e" campo="Descripción" placeholder="Descripción" onchange='removec(this)'></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                    <form>
+
+                        <div class="form-group row">
+
+                            <div class="form-group col-md-6">
+
+                                <select class="form-control" id="pro_ins" name="ins_e" campo="Insumo" onchange='removec(this), Get_InsiumoXId(this, "#pro_ins_unidad")'>
+
+                                    <option selected value=''>Seleccione Insumo</option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="form-group col-md-3">
+
+                                <input type="number" class="form-control" id="pro_ins_cant" name="ins_e" campo="Cantidad" placeholder="Cantidad" onchange='removec(this)'>
+
+                            </div>
+
+                            <div class="form-group col-md-2">
+
+                                <input type="text" class="form-control" id="pro_ins_unidad" name="ins_e" campo="Unidad" placeholder="Unidad" onchange='removec(this)' readonly='readonly'>
+
+                            </div>
+
+                            <div class="form-group col-md-1" style="display: none;">
+
+                                <input type="number" id="num_ins" value="0">
+
+                            </div>
+
+                            <div class="form-group col-md-1">
+
+                                <a class="btn btn-primary" href="javascript: ValAgregarInsumo()" role="button"><i class="fas fa-plus"></i></a>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                    <div id="pro_mod_nuevo_insumos">
+
+                    </div>
+
+                    <hr>
+
+                    <div id="pro_mod_editar_insumos" class="container-fluid">
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+
+                    <a id="proActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+
+                    <button id="proActualizando" class="btn btn_sh btn-sm" type="button" disabled style="display:none;">
+
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+
+                        Guardando...
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+

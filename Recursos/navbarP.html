@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark row" id="navi">
+            <a class="navbar-brand col-2" href="index.html">
+                <img src="../HomeShake/media/logo.png" alt="" style=" height: auto; width: 40%;"/>
+            </a>
+            <script>
+                $(document).ready(function () {
+                    var device = navigator.userAgent
+
+                    if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i))
+                    {
+                        $("#linkmenu").html('<a class="anav nav-item nav-link" href="movil.html#menu">INICIO</a>');
+                    } else
+                    {
+                       $("#linkmenu").html('<a class="anav nav-item nav-link" href="inicio.html#menu">INICIO</a>');
+                    }
+                });
+            </script>
+            <div class="nav justify-content-end col" id="linkmenu">
+            </div>
+        </nav>
+        <div class="modal fade bd-example-modal-lg" id="modal_msg" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" style="font-weight: bold;">Alerta</p>
+                    </div>
+                    <div class="modal-body" id="msg"></div>
+                    <div class="modal-footer" id="btns"></div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

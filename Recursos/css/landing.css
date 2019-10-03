@@ -1,0 +1,448 @@
+/*------------------------------ Fonts ----------------------------*/
+@font-face {
+  font-family: century;
+  src: url("Century.ttf");
+}
+
+@font-face {
+  font-family: myriad;
+  src: url("MYRIADPRO.OTF");
+}
+
+/*------------------------------ Imágenes ----------------------------*/
+.img_banner {
+  height: auto;
+  width: 100%;
+}
+
+.img_ico {
+  height: auto;
+  width: 50%;
+}
+
+.img_conc {
+  height: auto;
+  width: 200px;
+  margin: 1%;
+}
+
+/*------------------------------ Textos ----------------------------*/
+.tittlestxt {
+  text-align: center;
+  text-shadow: -1px 0 #E94C2E, 0 1px #E94C2E, 1px 0 #E94C2E, 0 -1px #E94C2E;
+  color: white;
+  font-family: shakeitoff;
+  font-size: 100%;
+}
+
+.generaltxt {
+  color: black;
+  font-family: regularsh;
+  font-size: 100%;
+}
+
+.tittleinfo {
+  text-align: right;
+}
+
+txtajuste {
+  font-size: 100%;
+}
+
+.pinfo {
+  text-align: justify;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  /*text-shadow: -1px 0 lightgray, 0 0.5px lightgray, 0.5px 0 lightgray, 0 -1px lightgray;*/
+  color: #003e6f;
+  ;
+  /*color: #6b195a;*/
+  /*color: #91b234;*/
+  font-family: century;
+}
+
+h4, h5, h6 {
+  color: #003e6f;
+  /*color: #6b195a;*/
+  /*color: #91b234;*/
+  font-family: century;
+}
+
+/*hr{
+border: 0;
+height: 55px;
+background-image: url(media/type_5.png);
+background-repeat: no-repeat;
+}*/
+/*------------------------------ Fondos y contenedores ----------------------------*/
+
+.backText{
+  display: none;
+}
+
+body {
+  height: 100vh;
+  padding: 0 !important;
+}
+
+.content-inicio {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+}
+
+#navb_1 {
+  height: 100%;
+}
+
+.nav-pills {
+  width: 100%;
+  height: 100%;
+  padding: 2%;
+  border-right: #000 solid 1px;
+  overflow: auto;
+  position: relative;
+}
+
+#L_contenido {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.tab-pane {
+  height: 100%;
+}
+
+.tab-content {
+  position: relative;
+  height: calc(100% - 42px);
+  overflow: auto;
+}
+
+.content-table {
+  position: relative;
+  max-height: calc(100% - 127px);
+  overflow: auto;
+}
+
+/*.table{
+    display: block;
+}
+
+.table > thead{
+    display: block;
+    position: sticky;
+    top: 0;
+    background-color: #fafafa;
+}
+
+.table > tbody{
+    display: block;
+}
+
+.table tr{
+    display: block;
+    width: 100%;
+}*/
+.barra {
+  overflow-y: auto;
+  height: 80%;
+}
+
+.fondo_Home {
+  background-color: #003e6f;
+  ;
+  background-size: 100% auto;
+  background-attachment: initial;
+  margin-top: 102px;
+}
+
+.fondo_initial {
+  padding-top: 102px;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-bottom: 5%;
+  background-color: white;
+  background-size: 100% auto;
+  background-attachment: initial;
+  min-height: 100vh;
+}
+
+.fondo_fixed {
+  padding-top: 102px;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-bottom: 5%;
+  background-color: white;
+  background-size: 100% auto;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.galeria_container {
+  width: 90%;
+  margin-top: 10%;
+}
+
+.galeria_modal {
+  height: 400px;
+  overflow: auto;
+}
+
+.testimonial {
+  background-color: none;
+}
+
+.testimonialcont {
+  width: 90%;
+  margin-top: 10%;
+}
+
+.promocont {
+  width: 80%;
+  margin: 5%;
+}
+
+.networksdiv {
+  color: #9B3F7A;
+  position: fixed;
+  display: block;
+  left: 96%;
+  margin-top: 10%;
+  z-index: 999;
+}
+
+.networksdiv a {
+  color: #9B3F7A;
+}
+
+.comentdiv {
+  color: #9B3F7A;
+  position: fixed;
+  display: block;
+  right: 94%;
+  margin-top: 10%;
+  z-index: 999;
+  padding: 1%;
+}
+
+.cardmorado {
+  border: #6b195a solid 1px;
+  color: #6b195a;
+}
+
+.cardmorado h5 {
+  color: #6b195a;
+}
+
+.bordersconf {
+  border: #6b195a solid 1px;
+  margin: 1%;
+  padding: 2%;
+}
+
+.cardverde {
+  border: #91b234 solid 1px;
+  color: #91b234;
+}
+
+.cardverde h5 {
+  color: #91b234;
+}
+
+.menu_cont {
+  margin: 1%;
+}
+
+.loginpc {
+  background-color: white;
+  height: 100%;
+  padding: 4%;
+  width: 30%;
+}
+
+.loginmov {
+  background-color: white;
+  height: auto;
+  padding: 4%;
+  border-radius: 2%;
+  box-shadow: 3px 3px lightgray;
+  width: 80%;
+}
+
+.div_filtros {
+  display none;
+  border: lightgray 1px solid;
+  width: 200px;
+  padding: 2%;
+  position: absolute;
+  z-index: 999;
+  background-color: white;
+}
+
+/*------------------------------ Botones ----------------------------*/
+.pbtn-big{
+    color: white;
+    width: 80%;
+    font-size: bolder;
+    text-align: center;
+}
+
+.pbtn{
+    color: white;
+    font-size: bolder;
+    text-align: center;
+}
+
+.btn_sh{
+
+    text-align: center;
+    background-color: #6b195a;
+    color: white;
+    font-weight: bold;
+    margin:  1%;
+    width: 200px;
+
+}
+
+.btn_sh_normal{
+    text-align: center;
+    background-color: #6b195a;
+    color: white;
+}
+
+.btn_sh_normal:hover{
+    color: white;
+    opacity: 0.7;
+}
+
+.btn_sh:hover{
+
+    color: white;
+    opacity: 0.7;
+
+}
+
+.btn_v{
+
+    text-align: center;
+    background-color: #6b195a;
+    color: white;
+    font-weight: bold;
+    margin:  1%;
+    width: 100px;
+    font-size: 60%;
+    padding: 1%;
+
+
+}
+/*------------------------------ Textboxes ----------------------------*/
+.textbox {
+  border-bottom: 1px solid #003e6f;
+  ;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  background-color: transparent;
+}
+
+.card {
+  width: 100%;
+  height: auto;
+  padding: 3%;
+  margin-bottom: 15%;
+}
+
+/*------------------------------ NavBar ----------------------------*/
+.anav {
+  color: #6b195a;
+  transition: 0.2s;
+  font-size: 100%;
+}
+
+.anav:hover {
+  /*color: white;*/
+  color: #6b195a;
+  height: auto;
+  transform: scale(1.0);
+  background-color: transparent;
+  border: #6b195a 0.5px solid;
+  opacity: 0.9;
+}
+
+.navbar {
+  background-color: white;
+  height: 102px;
+}
+
+.navbar-brand {
+  margin-left: 10%;
+}
+
+.active_nav {
+  color: white;
+  background-color: #6b195a;
+}
+
+.active_nav2 {
+  background-color: transparent;
+  border: #6b195a 2px solid;
+}
+
+.optionsBar{
+
+    background-color: white;
+    color: #6b195a;
+    font-weight: bold;
+
+}
+
+/*-----------------------------Galería de imágenes---------------------*/
+div.gallery {
+  margin: 5px;
+  border: 1px solid #ccc;
+  float: left;
+  width: 180px;
+}
+
+div.gallery:hover {
+  border: 1px solid #777;
+}
+
+div.gallery img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 15px;
+  text-align: center;
+}
+
+/*--------------Mapeo-----------------------*/
+.area {
+  border: #000 solid 1px;
+}
+/*-----------------------------Scrolls---------------------*/
+
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: lightgray;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #6b195a;
+    border-radius: 20%;
+}

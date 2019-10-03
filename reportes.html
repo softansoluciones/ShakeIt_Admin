@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<!--
+
+To change this license header, choose License Headers in Project Properties.
+
+To change this template file, choose Tools | Templates
+
+and open the template in the editor.
+
+-->
+
+<head>
+
+  <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+
+  <script src="js/Reportes/reportes.js" type="text/javascript"></script>
+
+</head>
+
+
+
+<body class="">
+
+  <ul class="nav justify-content-start">
+
+    <li class="nav-item" style="margin-right: 2%;">
+
+      <a class="btn btn-light btn-sm anav" href="javascript: show_filtros('d');" role="button">Fitros</a>
+
+      <a class="btn btn-light btn-sm anav" href="javascript: show_filtros('a');" role="button">Filtros Año</a>
+
+    </li>
+
+  </ul>
+
+  <div class="div_filtros" id="filtrosd" style="display: none;">
+
+    <center>
+
+      <h5>Filtros</h5>
+
+    </center>
+
+    <hr>
+
+    <input class="form-control" id="fpvdate" type="date">
+
+    <select class="custom-select custom-select" id="fpvSedes">
+
+      <option selected value="">Seleccione Sede</option>
+
+      <option value="">No existe información</option>
+
+    </select>
+
+    <a class="anav nav-link active_nav" name="filter_pv" href="#" id="fpvd" data-criterio="d" onclick="filterPV(this)">Día</a>
+
+    <a class="anav nav-link" name="filter_pv" href="#" id="fpvm" data-criterio="m" onclick="filterPV(this)">Mes</a>
+
+    <a class="anav nav-link" name="filter_pv" href="#" id="fpva" data-criterio="a" onclick="filterPV(this)">Año</a>
+
+    <a id="bfilt" class="btn btn_sh_normal btn-lg btn-block" href="javascript: filtros('d');" role="button">Buscar</a>
+
+    <a id="bfilting" class="btn btn_sh_normal disabled btn-lg btn-block" href="javascript: filtros('d');" role="button" style="display: none;">
+
+      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+
+      Buscando...
+
+    </a>
+
+  </div>
+
+  <div class="div_filtros" id="filtrosa" style="display: none;">
+
+    <center>
+
+      <h5>Filtros Año</h5>
+
+    </center>
+
+    <hr>
+
+    <select class="custom-select custom-select" id="fpvmes">
+
+      <option selected value="">Seleccione Mes</option>
+
+      <option value="">No existe información</option>
+
+    </select>
+
+    <select class="custom-select custom-select" id="fpvanio">
+
+      <option selected value="">Seleccione Año</option>
+
+      <option value="">No existe información</option>
+
+    </select>
+
+    <select class="custom-select custom-select" id="fpvSedesa">
+
+      <option selected value="">Seleccione Sede</option>
+
+      <option value="">No existe información</option>
+
+    </select>
+
+    <a id="bfilta" class="btn btn_sh_normal btn-lg btn-block" href="javascript: filtros('a');" role="button">Buscar</a>
+
+    <a id="bfiltinga" class="btn btn_sh_normal disabled btn-lg btn-block" href="javascript: filtros('a');" role="button" style="display: none;">
+
+      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+
+      Buscando...
+
+    </a>
+
+  </div>
+
+  <br>
+
+  <h4>Productos Vendidos<strong id="ftext"></strong></h4>
+
+  <br>
+
+  <h6>Total: <strong id="vtotal"></strong></h6>
+
+  <hr>
+
+  <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
+
+    <table class="table table-borderless">
+
+      <thead>
+
+        <tr>
+
+          <th scope="col">#</th>
+
+          <th scope="col">Nombre Producto</th>
+
+          <th scope="col">Precio</th>
+
+          <th scope="col">Cantidad</th>
+
+          <th scope="col">Valor Total</th>
+
+          <th scope="col">Sede</th>
+
+        </tr>
+
+      </thead>
+
+        <tbody id="tab_VentasXDia">
+
+        </tbody>
+
+    </table>
+
+  </div>
+
+</body>
+

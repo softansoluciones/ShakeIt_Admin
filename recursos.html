@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<!--
+
+To change this license header, choose License Headers in Project Properties.
+
+To change this template file, choose Tools | Templates
+
+and open the template in the editor.
+
+-->
+
+
+
+<head>
+
+</head>
+
+
+
+<body class="">
+
+  <div>
+
+    <br>
+
+    <br>
+
+      <h4>RECURSOS</h4>
+
+    <hr>
+
+  </div>
+
+  <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
+
+    <table class="table table-borderless">
+
+      <thead>
+
+        <tr>
+
+          <th>#</th>
+
+          <th>Descripción</th>
+
+          <th>Descarga</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody id="tab_recursosBody">
+
+        <tr>
+
+          <th scope="row">1</th>
+
+          <td>Team Viewer</td>
+
+          <td><a class="btn btn_sh_normal btn-sm" href="https://download.teamviewer.com/download/TeamViewer_Setup_es-lgr.exe" role="button">Descargar</a></td>
+
+        </tr>
+
+        <tr>
+
+          <th scope="row">2</th>
+
+          <td>Gestor De Base De Datos</td>
+
+          <td><a class="btn btn_sh_normal btn-sm" href="https://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-workbench-community-8.0.16-winx64.msi" role="button">Descargar</a></td>
+
+        </tr>
+
+        <tr>
+
+          <th scope="row">3</th>
+
+          <td>Instalador De Shake It</td>
+
+          <td><a class="btn btn_sh_normal btn-sm" href="http://shakeitcol.co/Archivos/Updates/ShakeIt-Setup-1.0.0.exe" role="button">Descargar</a></td>
+
+        </tr>
+        
+        <tr>
+
+          <th scope="row">4</th>
+
+          <td>App de inventario</td>
+
+          <td><a class="btn btn_sh_normal btn-sm" href="http://shakeitcol.co/Archivos/ShakeItInventario-debug.3560139.15.apk" role="button">Descargar</a></td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+
+  <!---- Modal Registro------->
+
+  <div id="sede_mod_guardar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+      <div class="modal-content">
+
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="exampleModalLongTitle">Registro De Sede</h5>
+
+        </div>
+
+        <div class="modal-body">
+
+          <form class="">
+
+            <div id="msg_alert_modG" class="alert alert-dark" role="alert" style="display: none;">
+
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_nitg" name="sede_g" data-campo="Nit" placeholder="Nit" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_nomg" name="sede_g" data-campo="Nombre" placeholder="Nombre De Sede" onchange='removec(this), get_sedexnom()'>
+
+              </div>
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_dirg" name="sede_g" data-campo="Dirección" placeholder="Dirección de sede" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="form-group col-md-6">
+
+                <select class="form-control" id="sede_depg" name="sede_g" data-campo="Departamento" onchange="Get_MunicipiosSel('#sede_mung', this)">
+
+                  <option>Elegir Departamento</option>
+
+                </select>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <select class="form-control" id="sede_mung" name="sede_g" data-campo="Municipio">
+
+                  <option>Elegir Municipio</option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="form-group col-md-6">
+
+                <input type="number" class="form-control" id="sede_tel1g" name="sede_g" data-campo="Teléfono 1" placeholder="Teléfono" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <input type="number" class="form-control" id="sede_tel2g" name="sede_g" data-campo="WhatsApp" placeholder="WhatsApp" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-4  backText">
+
+                <input type="number" class="form-control" id="sede_tel3g" name="sede_g" data-campo="Teléfono 3" placeholder="Teléfono 3" value="0" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row backText">
+
+              <div class="form-group col-md-6">
+
+                <input type="text" class="form-control" id="sede_longg" name="sede_g" data-campo="Longitud" value="0" placeholder="Longitud(Ubicación)" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <input type="text" class="form-control" id="sede_latg" name="sede_g" data-campo="Latitud" value="0" placeholder="Latitud(Ubicación)" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+          </form>
+
+        </div>
+
+        <div class="modal-footer">
+
+          <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+
+          <a id="sedeGuardar" class="btn btn_sh btn-sm" href="javascript: validarGuardar();" role="button">Guardar</a>
+
+          <a id="sedeGuardando" class="btn btn_sh btn-sm disabled backText" href="#" role="button">
+
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+
+            Guardando...
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!---- Modal Editar------->
+
+  <div id="sede_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+      <div class="modal-content">
+
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="exampleModalLongTitle">Edición de sedes</h5>
+
+        </div>
+
+        <div class="modal-body">
+
+          <form class="">
+
+            <div id="msg_alert_modE" class="alert alert-dark" role="alert" style="display: none;">
+
+            </div>
+
+            <div class="form-group backText">
+
+              <input type="text" class="form-control" id="sede_ide" name="sede_e" data-campo="Id" placeholder="id" onchange='removec(this)'>
+
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_nite" name="sede_e" data-campo="Nit" placeholder="Nit" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_nome" name="sede_e" data-campo="Nombre" placeholder="Nombre De Sede" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-4">
+
+                <input type="text" class="form-control" id="sede_dire" name="sede_e" data-campo="Dirección" placeholder="Dirección de sede" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="form-group col-md-6">
+
+                <select class="form-control" id="sede_depe" name="sede_e" data-campo="Departamento" onchange="Get_MunicipiosSel('#sede_mune', this)">
+
+                  <option>Elegir Departamento</option>
+
+                </select>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <select class="form-control" id="sede_mune" name="sede_e" data-campo="Municipio">
+
+                  <option>Elegir Municipio</option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="form-group col-md-6">
+
+                <input type="number" class="form-control" id="sede_tel1e" name="sede_e" data-campo="Teléfono 1" placeholder="Teléfono" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <input type="number" class="form-control" id="sede_tel2e" name="sede_e" data-campo="WhatsApp" placeholder="WhatsApp" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-4  backText">
+
+                <input type="number" class="form-control" id="sede_tel3e" name="sede_e" data-campo="Teléfono 3" placeholder="Teléfono 3" value="0" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="form-group col-md-6">
+
+                <input type="text" class="form-control" id="sede_longe" name="sede_e" data-campo="Longitud" value="0" placeholder="Longitud(Ubicación)" onchange='removec(this)'>
+
+              </div>
+
+              <div class="form-group col-md-6">
+
+                <input type="text" class="form-control" id="sede_late" name="sede_e" data-campo="Latitud" value="0" placeholder="Latitud(Ubicación)" onchange='removec(this)'>
+
+              </div>
+
+            </div>
+
+          </form>
+
+        </div>
+
+        <div class="modal-footer">
+
+          <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+
+          <a id="sedeActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+
+          <button id="sedeActualizando" class="btn btn_sh btn-sm" type="button" disabled style="display:none;">
+
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+
+            Guardando...
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+

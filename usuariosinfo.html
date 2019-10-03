@@ -1,0 +1,74 @@
+<head>
+  <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+  <script src="js/Usuarios/usuariosBD.js" type="text/javascript"></script>
+  <script src="js/Usuarios/usuariosinfo.js" type="text/javascript"></script>
+</head>
+<body class="">
+  <br>
+  <br>
+  <center>
+    <h4>ACTUALIZAR DATOS DE USUARIO</h4>
+  </center>
+  <hr>
+  <div class="modal-body" style="overflow-y: Auto; height: calc(100% - 140px);">
+    <form class="">
+      <div id="msg_alert_modE" class="alert alert-dark" role="alert" style="display: none;">
+      </div>
+      <div class="form-group backText">
+        <input type="number" class="form-control" id="us_ide" name="us_e" data-campo="Documento de identidad" placeholder="Documento de identidad" onchange='removec(this)'>
+      </div>
+      <div class="form-group">
+        <input type="number" class="form-control" id="us_doce" name="us_e" data-campo="Documento de identidad" placeholder="Documento de identidad" onchange='removec(this)'>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <input type="text" class="form-control" id="us_nome" name="us_e" data-campo="Nombres" placeholder="Nombres" onchange='removec(this)'>
+        </div>
+        <div class="form-group col-md-6">
+          <input type="text" class="form-control" id="us_apee" name="us_e" data-campo="Apellidos" placeholder="Apellidos" onchange='removec(this)'>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <input type="number" class="form-control" id="us_tele" name="us_e" data-campo="Teléfono" placeholder="Teléfono" onchange='removec(this)'>
+        </div>
+        <div class="form-group col-md-6">
+          <input type="email" class="form-control" id="us_emaile" name="us_e" data-campo="E-Mail" placeholder="E-Mail" onchange='removec(this)'>
+        </div>
+      </div>
+      <div class="form-group backText">
+        <input type="password" class="form-control" id="us_passe" name="us_e" data-campo="Contraseña" placeholder="Contraseña" onchange='removec(this)'>
+      </div>
+      <div class="form-group backText" name="passesc">
+      <a id="usPass_btn" class="btn btn_sh_normal btn-sm" href="javascript: cambiarPass();" role="button">Actualizar Contraseña</a>
+      </div>
+      <hr>
+      <div id="chPass" class="form-group">
+        <div class="form-group backText" name="passesc">
+          <input type="password" class="form-control" id="us_oldpasse" name="us_g" data-campo="Contraseña Antigua" placeholder="Contraseña Antigua" onchange='removec(this), validarAntiguaPass()' value="">
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <input type="password" class="form-control" id="us_pass1e" name="us_g" data-campo="Nueva Contraseña" placeholder="Nueva Contraseña" onchange='removec(this), validarCriteriosPass(this)'>
+          </div>
+          <div class="form-group col-md-6">
+            <input type="password" class="form-control" id="us_pass2e" name="us_g" data-campo="Repita Contraseña" placeholder="Repita Contraseña" onchange='removec(this), validarNuevaPass(this)' onkeyup="validarNuevaPass(this)">
+          </div>
+        </div>
+      </div>
+      <div class="form-group backText">
+        <input type="number" class="form-control" id="us_tipoe" name="us_e" data-campo="Tipo De Usuario" onchange='removec(this)'>
+      </div>
+      <div class="form-group backText">
+        <input type="number" class="form-control" id="us_estadoe" name="us_e" data-campo="Estado De Usuario" onchange='removec(this)'>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <a id="usActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+      <a id="usActualizando" class="btn btn_sh btn-sm disabled" style="display: none;" href="#" role="button">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+      </a>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,70 @@
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm p-3 mb-5 bg-white rounded" style="height: 80px;">
+            <a class="navbar-brand" href="inicioM.html">
+                <img src="../ShakeIt_Admin/media/logo4.png" alt="" class="animated shake" style="height: auto; width: 30%;"/>
+            </a>
+            <a href="javascript: menuPan()">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    MENÚ
+                </button>
+            </a>
+        </nav>
+        <div class="overpanel" id="menupan" style="background-color: white; width: 100%; height: calc(100vh - 1px); position: fixed; z-index: 10; opacity: 1; left: 100%; box-shadow: 1px 1px 1px 1px gray; display:;">
+            <center>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <a id="mod_6" class="anav nav-item nav-link" href="javascript: Vista_UsuarioInfo(), menuPan()">
+                  <h4 id="nom_us">
+                    nom_us
+                  </h4>
+                </a>
+                <h6 id="car_us">
+                  car_us
+                </h6>
+                <hr>
+              </center>
+              <div style="overflow-y: auto; height: calc(100% - 250px);">
+                <a id="mod_9" class="anav nav-item nav-link" name="menup" data-usertype="9" href="javascript: Vista_Alertas(), menuPan()">
+                  ALERTAS
+                  <span id="badgeAlert" class="badge badge-pill badge-danger backText">0</span>
+                </a>
+                <a id="mod_1" class="anav nav-item nav-link" name="menup" data-usertype="1"
+                  href="javascript: Vista_Reportes()">REPORTES</a>
+                <div id="subMod_1" name="sub_menu">
+                  <a id="mod_1_1" class="anav nav-item nav-link ml-3 my-1" href="javascript: Vista_Reportes(), menuPan()">Productos
+                    Vendidos</a>
+                  <a id="mod_1_2" class="anav nav-item nav-link ml-3 my-1" href="javascript: Vista_Ventas(), menuPan()">Ventas</a>
+                </div>
+                <a id="mod_2" class="anav nav-item nav-link" name="menup" data-usertype="2"
+                  href="javascript: Vista_Inventario(), menuPan()">INVENTARIO</a>
+                <a id="mod_3" class="anav nav-item nav-link" name="menup" data-usertype="1"
+                  href="javascript: Vista_Insumos(), menuPan()">INSUMOS</a>
+                <a id="mod_4" class="anav nav-item nav-link" name="menup" data-usertype="1"
+                  href="javascript: Vista_Productos()">PRODUCTOS</a>
+                <div id="subMod_4" name="sub_menu">
+                  <a id="mod_4_1" class="anav nav-item nav-link ml-3 my-1" href="javascript: Vista_Productos(), menuPan()">Listado</a>
+                  <a id="mod_4_2" class="anav nav-item nav-link ml-3 my-1" href="javascript: Vista_ProductosReg(), menuPan()">Registro</a>
+                </div>
+                <a id="mod_5" class="anav nav-item nav-link" name="menup" data-usertype="2"
+                  href="javascript: Vista_Usuarios(), menuPan()">USUARIOS</a>
+                <a id="mod_7" class="anav nav-item nav-link" name="menup" data-usertype="1"
+                  href="javascript: Vista_Sedes(), menuPan()">SEDES</a>
+                  <a id="mod_10" class="anav nav-item nav-link" name="menup" data-usertype="2" href="javascript: Vista_Parametrizador(), menuPan()">PARAMETRIZADOR</a>
+                <a id="mod_8" class="anav nav-item nav-link" name="menup" data-usertype="2"
+                  href="javascript: Vista_Recursos(), menuPan()">RECURSOS</a>
+                <a class="anav nav-item nav-link" href="javascript: LogOut()">SALIR</a>
+              </div>
+        </div>
+        <div class="modal fade bd-example-modal-lg" id="modal_msg" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" style="font-weight: bold;">Alerta</p>
+                    </div>
+                    <div class="modal-body" id="msg"></div>
+                    <div class="modal-footer" id="btns"></div>
+                </div>
+            </div>
+        </div>

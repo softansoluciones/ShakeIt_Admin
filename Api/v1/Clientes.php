@@ -6,271 +6,329 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Clientes.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new Clientes();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new Clientes();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("Clientes.php/", $url);
 
-if (isset($_GET["clientes"])) {
-
-    $resultado = $datos->get_Clientes();
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_POST["cliente"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_POST["cliente"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
+}
+
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "lista") {
+                        GetClientes();
+                    } elseif ($accion == "id") {
+                        GetClientesXId($param1);
+                    } elseif ($accion == "sede") {
+                        GetClientesXSede($param1);
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveClientes();
+                } elseif ($accion == "actualizar") {
+                    UpdateClientes($param1);
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            if ($accion == "eliminar") {
+                DeleteClientes($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                echo json_encode($GLOBALS['res']);
+            }
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
+    }
     
-    $id = $datosparciales[0];
 
-    $resultado = $datos->get_Cliente($id);
+    function GetClientes() {
+
+        $resultado = $GLOBALS['datos']->get_Clientes($usuario);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetClientes() {
+
+    $resultado = $GLOBALS['datos']->get_Clientes();
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["clientedoc"])) {
+function GetClientesXId($id) {
 
-    $entrada = $_POST["clientedoc"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $resultado = $GLOBALS['datos']->get_Cliente($id);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function GetClientesXDoc($documento) {
+
+    $resultado = $GLOBALS['datos']->get_ClienteXDoc($documento);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function GetClientesXTel($telefono) {
+
+    $resultado = $GLOBALS['datos']->get_ClienteXTel($telefono);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function GetClientesXSede($sede) {
+
+    $resultado = $GLOBALS['datos']->get_ClientesXSede($sede);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function SaveClientes() {
+
+    if(isset($_POST['documento'])){
+        $doc = $_POST['documento'];
+    }else {
+        $doc = "";
+    }
+
+    if(isset($_POST['nombres'])){
+        $nom = $_POST['nombres'];
+    }else {
+        $nom = "";
+    }
+
+    if(isset($_POST['appellidos'])){
+        $ape = $_POST['appellidos'];
+    }else {
+        $ape = "";
+    }
+
+    if(isset($_POST['direccion'])){
+        $dir = $_POST['direccion'];
+    }else {
+        $dir = "";
+    }
+
+    if(isset($_POST['barrio'])){
+        $barr = $_POST['barrio'];
+    }else {
+        $barr = "";
+    }
     
-    $doc = $datosparciales[0];
-
-    $resultado = $datos->get_ClienteXDoc($doc);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+    if(isset($_POST['municipio'])){
+        $mun = $_POST['municipio'];
+    }else {
+        $mun = "";
     }
+
+    if(isset($_POST['telefono'])){
+        $tel = $_POST['telefono'];
+    }else {
+        $tel = "";
+    }
+
+    if(isset($_POST['usuario'])){
+        $us = $_POST['usuario'];
+    }else {
+        $us = "";
+    }
+
+    if(isset($_POST['password'])){
+        $pass = $_POST['password'];
+    }else {
+        $pass = "";
+    }
+
+    if(isset($_POST['email'])){
+        $email = $_POST['email'];
+    }else {
+        $email = "";
+    }
+
+    if(isset($_POST['fecha_nacimiento'])){
+        $nac = $_POST['fecha_nacimiento'];
+    }else {
+        $nac = "";
+    }
+
+        $resultado = $GLOBALS['datos']->insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["clientetel"])) {
-
-    $entrada = $_POST["clientetel"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+function UpdateClientes($id) {
     
-    $tel = $datosparciales[0];
+    $id = $_POST['id'];
+    $doc = $_POST['documento'];
+    $nom = $_POST['nombres'];
+    $ape = $_POST['appellidos'];
+    $dir = $_POST['direccion'];
+    $barr = $_POST['barrio'];
+    $mun = $_POST['municipio'];
+    $tel = $_POST['telefono'];
+    $us = $_POST['usuario'];
+    $pass = $_POST['password'];
+    $email = $_POST['email'];
+    $nac = $_POST['fecha_nacimiento'];
 
-    $resultado = $datos->get_ClienteXTel($tel);
+        $resultado = $GLOBALS['datos']->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
 
-    if ($resultado != 0) {
+        if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["insertar"])) {
+function DeleteClientes($id) {
 
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->delete_Clientes($id);
 
-    $doc = $datosparciales[0];
-    $nom = $datosparciales[1];
-    $ape = $datosparciales[2];
-    $dir = $datosparciales[3];
-    $barr = $datosparciales[4];
-    $mun = $datosparciales[5];
-    $tel = $datosparciales[6];
-    $us = $datosparciales[7];
-    $pass = $datosparciales[8];
-    $email = $datosparciales[9];
-    $nac = $datosparciales[10];
+        if ($resultado != 0) {
 
-    $resultado = $datos->insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
-
-if (isset($_POST["insertarlocal"])) {
-
-    $entrada = $_POST["insertarlocal"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $doc = $datosparciales[0];
-    $nom = $datosparciales[1];
-    $ape = $datosparciales[2];
-    $dir = $datosparciales[3];
-    $barr = $datosparciales[4];
-    $mun = $datosparciales[5];
-    $tel = $datosparciales[6];
-    $email = $datosparciales[7];
-    $nac = $datosparciales[8];
-
-    $resultado = $datos->insert_ClieteLocal($doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
-}
-
-if (isset($_POST["insertarventa"])) {
-
-    $entrada = $_POST["insertarventa"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $nom = $datosparciales[0];
-    $ape = $datosparciales[1];
-    $dir = $datosparciales[2];
-    $barr = $datosparciales[3];
-    $mun = $datosparciales[4];
-    $tel = $datosparciales[5];
-
-    $resultado = $datos->insert_ClieteVenta($nom, $ape, $dir, $barr, $mun, $tel);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
-}
-
-if (isset($_POST["actualizar"])) {
-
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-    $doc = $datosparciales[1];
-    $nom = $datosparciales[2];
-    $ape = $datosparciales[3];
-    $dir = $datosparciales[4];
-    $barr = $datosparciales[5];
-    $mun = $datosparciales[6];
-    $tel = $datosparciales[7];
-    $us = $datosparciales[8];
-    $pass = $datosparciales[9];
-    $email = $datosparciales[10];
-    $nac = $datosparciales[11];
-
-    $resultado = $datos->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
-}
-
-if (isset($_POST["actualizarlocal"])) {
-
-    $entrada = $_POST["actualizarlocal"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-    $doc = $datosparciales[1];
-    $nom = $datosparciales[2];
-    $ape = $datosparciales[3];
-    $dir = $datosparciales[4];
-    $barr = $datosparciales[5];
-    $mun = $datosparciales[6];
-    $tel = $datosparciales[7];
-    $email = $datosparciales[8];
-    $nac = $datosparciales[9];
-
-    $resultado = $datos->update_ClienteLocal($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
-}
-
-if (isset($_POST["actualizarventa"])) {
-
-    $entrada = $_POST["actualizarventa"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-    $nom = $datosparciales[1];
-    $ape = $datosparciales[2];
-    $dir = $datosparciales[3];
-    $barr = $datosparciales[4];
-    $mun = $datosparciales[5];
-    $tel = $datosparciales[6];
-    
-    $resultado = $datos->update_ClienteVenta($id, $nom, $ape, $dir, $barr, $mun, $tel);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
-}
-

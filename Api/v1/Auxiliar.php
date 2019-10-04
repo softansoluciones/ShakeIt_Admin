@@ -208,11 +208,73 @@ function GetClientesXSede($sede) {
 
 function SaveClientes() {
 
-    $val = $_POST['valor'];
-    $est = $_POST['estado'];
-    $sede = $_POST['sede'];
+    if(isset($_POST['documento'])){
+        $doc = $_POST['documento'];
+    }else {
+        $doc = "";
+    }
 
-        $resultado = $GLOBALS['datos']->insert_Clientes($val, $est, $sede);
+    if(isset($_POST['nombres'])){
+        $nom = $_POST['nombres'];
+    }else {
+        $nom = "";
+    }
+
+    if(isset($_POST['appellidos'])){
+        $ape = $_POST['appellidos'];
+    }else {
+        $ape = "";
+    }
+
+    if(isset($_POST['direccion'])){
+        $dir = $_POST['direccion'];
+    }else {
+        $dir = "";
+    }
+
+    if(isset($_POST['barrio'])){
+        $barr = $_POST['barrio'];
+    }else {
+        $barr = "";
+    }
+    
+    if(isset($_POST['municipio'])){
+        $mun = $_POST['municipio'];
+    }else {
+        $mun = "";
+    }
+
+    if(isset($_POST['telefono'])){
+        $tel = $_POST['telefono'];
+    }else {
+        $tel = "";
+    }
+
+    if(isset($_POST['usuario'])){
+        $us = $_POST['usuario'];
+    }else {
+        $us = "";
+    }
+
+    if(isset($_POST['password'])){
+        $pass = $_POST['password'];
+    }else {
+        $pass = "";
+    }
+
+    if(isset($_POST['email'])){
+        $email = $_POST['email'];
+    }else {
+        $email = "";
+    }
+
+    if(isset($_POST['fecha_nacimiento'])){
+        $nac = $_POST['fecha_nacimiento'];
+    }else {
+        $nac = "";
+    }
+
+        $resultado = $GLOBALS['datos']->insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
 
         if ($resultado != 0) {
 
@@ -227,11 +289,21 @@ function SaveClientes() {
 }
 
 function UpdateClientes($id) {
+    
+    $id = $_POST['id'];
+    $doc = $_POST['documento'];
+    $nom = $_POST['nombres'];
+    $ape = $_POST['appellidos'];
+    $dir = $_POST['direccion'];
+    $barr = $_POST['barrio'];
+    $mun = $_POST['municipio'];
+    $tel = $_POST['telefono'];
+    $us = $_POST['usuario'];
+    $pass = $_POST['password'];
+    $email = $_POST['email'];
+    $nac = $_POST['fecha_nacimiento'];
 
-    $val = $_POST['valor'];
-    $est = $_POST['estado'];
-    $sede = $_POST['sede'];
-        $resultado = $GLOBALS['datos']->update_Clientes($id, $val, $est, $sede);
+        $resultado = $GLOBALS['datos']->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
 
         if ($resultado != 0) {
 

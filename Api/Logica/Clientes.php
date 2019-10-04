@@ -40,22 +40,6 @@ class Clientes {
         return $rows;
     }
 
-    public function get_ClienteXDoc($doc) {
-
-        $datos = new DClientes();
-
-        $result = $datos->get_ClienteXDoc($doc);
-
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $rows[] = $row;
-            }
-        } else {
-            $rows = 0;
-        }
-        return $rows;
-    }
-
     public function get_ClienteXTel($tel) {
 
         $datos = new DClientes();
@@ -72,11 +56,11 @@ class Clientes {
         return $rows;
     }
 
-    public function insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
+    public function insert_Cliete($nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac, $registro) {
 
         $datos = new DClientes();
 
-        $result = $datos->insert_Cliente($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+        $result = $datos->insert_Cliente($nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac, $registro);
 
         if ($result == TRUE) {
             $rows = 1;
@@ -86,11 +70,11 @@ class Clientes {
         return $rows;
     }
 
-    public function insert_ClieteLocal($doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac) {
+    public function update_Cliente($id, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
 
         $datos = new DClientes();
 
-        $result = $datos->insert_ClienteLocal($doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac);
+        $result = $datos->update_Cliente($id, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
 
         if ($result == TRUE) {
             $rows = 1;
@@ -99,61 +83,4 @@ class Clientes {
         }
         return $rows;
     }
-
-    public function insert_ClieteVenta($nom, $ape, $dir, $barr, $mun, $tel) {
-
-        $datos = new DClientes();
-
-        $result = $datos->insert_ClienteVenta($nom, $ape, $dir, $barr, $mun, $tel);
-
-        if ($result == TRUE) {
-            $rows = 1;
-        } else {
-            $rows = 0;
-        }
-        return $rows;
-    }
-
-    public function update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
-
-        $datos = new DClientes();
-
-        $result = $datos->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
-
-        if ($result == TRUE) {
-            $rows = 1;
-        } else {
-            $rows = 0;
-        }
-        return $rows;
-    }
-
-    public function update_ClienteLocal($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac) {
-
-        $datos = new DClientes();
-
-        $result = $datos->update_ClienteLocal($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac);
-
-        if ($result == TRUE) {
-            $rows = 1;
-        } else {
-            $rows = 0;
-        }
-        return $rows;
-    }
-
-    public function update_ClienteVenta($id, $nom, $ape, $dir, $barr, $mun, $tel) {
-
-        $datos = new DClientes();
-
-        $result = $datos->update_ClienteVenta($id, $nom, $ape, $dir, $barr, $mun, $tel);
-
-        if ($result == TRUE) {
-            $rows = 1;
-        } else {
-            $rows = 0;
-        }
-        return $rows;
-    }
-
 }

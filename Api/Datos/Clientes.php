@@ -6,7 +6,7 @@ class DClientes {
 
     public function get_Clientes() {
 
-        $sql = "CALL Cliente_Get();";
+        $sql = "CALL Clientes_Get();";
         $db = new dbmanager();
 
         return $db->executeQuery($sql);
@@ -14,15 +14,7 @@ class DClientes {
 
     public function get_Cliente($id) {
 
-        $sql = "call Cliente_GetXId('$id');";
-        $db = new dbmanager( );
-
-        return $db->executeQuery($sql);
-    }
-    
-    public function get_ClienteXDoc($doc) {
-
-        $sql = "call Cliente_GetXDoc('$doc');";
+        $sql = "call Clientes_GetXId('$id');";
         $db = new dbmanager( );
 
         return $db->executeQuery($sql);
@@ -30,55 +22,24 @@ class DClientes {
     
     public function get_ClienteXTel($tel) {
 
-        $sql = "call Cliente_GetXTel('$tel');";
+        $sql = "call Clientes_GetXTel('$tel');";
         $db = new dbmanager( );
 
         return $db->executeQuery($sql);
     }
 
-    public function update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
+    public function update_Cliente($id, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
 
-        $sql = "CALL Cliente_Update('$id', '$doc', '$nom', '$ape', '$dir', $barr, '$mun', '$tel', '$us', '$pass', '$email', '$nac');";
+        $sql = "CALL Clientes_Update('$id', '$nom', '$ape', '$dir', '$barr', '$mun', '$tel', '$us', '$pass', '$email', '$nac');";
         $db = new dbmanager( );
 
         return $db->executeQuery($sql);
     }
     
-    public function update_ClienteLocal($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac) {
+    public function insert_Cliente($nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac, $registro) {
 
-        $sql = "CALL Cliente_UpdateLocal('$id', '$doc', '$nom', '$ape', '$dir', $barr, '$mun', '$tel', '$email', '$nac');";
-        $db = new dbmanager( );
-
-        return $db->executeQuery($sql);
-    }
-    
-    public function update_ClienteVenta($id, $nom, $ape, $dir, $barr, $mun, $tel) {
-
-        $sql = "CALL Cliente_UpdateVenta('$id', '$nom', '$ape', '$dir', $barr, '$mun', '$tel');";
-        $db = new dbmanager( );
-
-        return $db->executeQuery($sql);
-    }
-
-    public function insert_Cliente($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac) {
-
-        $sql = "CALL Cliente_Add('$doc', '$nom', '$ape', '$dir', $barr, '$mun', '$tel', '$us', '$pass', '$email', '$nac');";
-        $db = new dbmanager();
-
-        return $db->executeQuery($sql);
-    }
-    
-    public function insert_ClienteVenta($nom, $ape, $dir, $barr, $mun, $tel) {
-
-        $sql = "CALL Cliente_AddVenta('$nom', '$ape', '$dir', $barr, '$mun', '$tel');";
-        $db = new dbmanager();
-
-        return $db->executeQuery($sql);
-    }
-    
-    public function insert_ClienteLocal($doc, $nom, $ape, $dir, $barr, $mun, $tel, $email, $nac) {
-
-        $sql = "CALL Cliente_AddLocal('$doc', '$nom', '$ape', '$dir', $barr, '$mun', '$tel', '$email', '$nac');";
+        $fecha = date("Y-m-d H:i:s");
+        $sql = "CALL Clientes_Add('$nom', '$ape', '$dir', '$barr', '$mun', '$tel', '$us', '$pass', '$email', '$nac', '$registro', '$fecha');";
         $db = new dbmanager();
 
         return $db->executeQuery($sql);

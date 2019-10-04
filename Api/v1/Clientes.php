@@ -110,22 +110,6 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
     }
     
 
-    function GetClientes() {
-
-        $resultado = $GLOBALS['datos']->get_Clientes($usuario);
-
-        if ($resultado != 0) {
-
-            $GLOBALS['res']->Respuesta = $resultado;
-            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-            echo json_encode($GLOBALS['res']);
-        } else {
-            $GLOBALS['res']->Respuesta = 0;
-            $GLOBALS['res']->Mensaje = "No existe información.";
-            echo json_encode($GLOBALS['res']);
-        }
-}
-
 function GetClientes() {
 
     $resultado = $GLOBALS['datos']->get_Clientes();
@@ -158,22 +142,6 @@ function GetClientesXId($id) {
     }
 }
 
-function GetClientesXDoc($documento) {
-
-    $resultado = $GLOBALS['datos']->get_ClienteXDoc($documento);
-
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
 function GetClientesXTel($telefono) {
 
     $resultado = $GLOBALS['datos']->get_ClienteXTel($telefono);
@@ -190,80 +158,58 @@ function GetClientesXTel($telefono) {
     }
 }
 
-function GetClientesXSede($sede) {
-
-    $resultado = $GLOBALS['datos']->get_ClientesXSede($sede);
-
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
 function SaveClientes() {
 
-    if(isset($_POST['documento'])){
-        $doc = $_POST['documento'];
-    }else {
-        $doc = "";
-    }
-
-    if(isset($_POST['nombres'])){
-        $nom = $_POST['nombres'];
+    if(isset($_POST['nombres_cliente'])){
+        $nom = $_POST['nombres_cliente'];
     }else {
         $nom = "";
     }
 
-    if(isset($_POST['appellidos'])){
-        $ape = $_POST['appellidos'];
+    if(isset($_POST['apellidos_cliente'])){
+        $ape = $_POST['apellidos_cliente'];
     }else {
         $ape = "";
     }
 
-    if(isset($_POST['direccion'])){
-        $dir = $_POST['direccion'];
+    if(isset($_POST['direccion_cliente'])){
+        $dir = $_POST['direccion_cliente'];
     }else {
         $dir = "";
     }
 
-    if(isset($_POST['barrio'])){
-        $barr = $_POST['barrio'];
+    if(isset($_POST['barrio_cliente'])){
+        $barr = $_POST['barrio_cliente'];
     }else {
         $barr = "";
     }
     
-    if(isset($_POST['municipio'])){
-        $mun = $_POST['municipio'];
+    if(isset($_POST['municipio_cliente'])){
+        $mun = $_POST['municipio_cliente'];
     }else {
         $mun = "";
     }
 
-    if(isset($_POST['telefono'])){
-        $tel = $_POST['telefono'];
+    if(isset($_POST['telefono_cliente'])){
+        $tel = $_POST['telefono_cliente'];
     }else {
         $tel = "";
     }
 
-    if(isset($_POST['usuario'])){
-        $us = $_POST['usuario'];
+    if(isset($_POST['usuario_cliente'])){
+        $us = $_POST['usuario_cliente'];
     }else {
         $us = "";
     }
 
-    if(isset($_POST['password'])){
-        $pass = $_POST['password'];
+    if(isset($_POST['password_cliente'])){
+        $pass = $_POST['password_cliente'];
     }else {
         $pass = "";
     }
 
-    if(isset($_POST['email'])){
-        $email = $_POST['email'];
+    if(isset($_POST['email_cliente'])){
+        $email = $_POST['email_cliente'];
     }else {
         $email = "";
     }
@@ -271,10 +217,15 @@ function SaveClientes() {
     if(isset($_POST['fecha_nacimiento'])){
         $nac = $_POST['fecha_nacimiento'];
     }else {
-        $nac = "";
+        $nac = "0000-00-00";
+    }
+    if(isset($_POST['registro_cliente'])){
+        $registro = $_POST['registro_cliente'];
+    }else {
+        $registro = "";
     }
 
-        $resultado = $GLOBALS['datos']->insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+        $resultado = $GLOBALS['datos']->insert_Cliete($nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac, $registro);
 
         if ($resultado != 0) {
 
@@ -289,21 +240,19 @@ function SaveClientes() {
 }
 
 function UpdateClientes($id) {
-    
-    $id = $_POST['id'];
-    $doc = $_POST['documento'];
-    $nom = $_POST['nombres'];
-    $ape = $_POST['appellidos'];
-    $dir = $_POST['direccion'];
-    $barr = $_POST['barrio'];
-    $mun = $_POST['municipio'];
-    $tel = $_POST['telefono'];
-    $us = $_POST['usuario'];
-    $pass = $_POST['password'];
-    $email = $_POST['email'];
+     
+    $nom = $_POST['nombres_cliente'];
+    $ape = $_POST['apellidos_cliente'];
+    $dir = $_POST['direccion_cliente'];
+    $barr = $_POST['barrio_cliente'];
+    $mun = $_POST['municipio_cliente'];
+    $tel = $_POST['telefono_cliente'];
+    $us = $_POST['usuario_cliente'];
+    $pass = $_POST['password_cliente'];
+    $email = $_POST['email_cliente'];
     $nac = $_POST['fecha_nacimiento'];
 
-        $resultado = $GLOBALS['datos']->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+        $resultado = $GLOBALS['datos']->update_Cliente($id, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
 
         if ($resultado != 0) {
 

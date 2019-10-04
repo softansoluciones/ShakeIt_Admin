@@ -16,7 +16,7 @@ class dbmanager {
   public function executeQuery($sql) {
 
 
-    $con = mysqli_connect(configurR::getserver(), configurR::getuser(), configurR::getpass(), configurR::getbd());
+    $con = mysqli_connect(configurL::getserver(), configurL::getuser(), configurL::getpass(), configurL::getbd());
 
 
     $acentos = $con->query("SET NAMES 'utf8'");

@@ -17,7 +17,7 @@ class configurL {
   {
 
 
-    return 'root';
+    return 'admin';
 
 
   }
@@ -26,7 +26,7 @@ class configurL {
   public static function getpass() {
 
 
-    return 'root';
+    return 'admin';
 
 
   }
@@ -35,7 +35,7 @@ class configurL {
   public static function getbd() {
 
 
-    return 'shakeitdata_des';
+    return 'sdes';
 
   }
 
@@ -67,7 +67,7 @@ class configurR {
 
   public static function getbd() {
 
-    return 'shakei_shakeit_prod';
+    return 'shakei_shakeit_des';
 
   }
 

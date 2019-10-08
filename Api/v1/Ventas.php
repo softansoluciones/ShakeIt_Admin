@@ -85,22 +85,22 @@ if (isset($_GET["ventas"])) {
 }
 
 if (isset($_GET["ventasfilt"])) {
-
-  $entrada = $_GET["ventasfilt"];
-  $entradadec = utf8_encode(base64_decode($entrada));
-  $datosparciales = explode("|", $entradadec);
-
-  $mes = $datosparciales[0];
-  $anio = $datosparciales[1];
-  $sede = $datosparciales[2];
-
+    
+    $entrada = $_GET["ventasfilt"];
+    $entradadec = utf8_encode(base64_decode($entrada));
+    $datosparciales = explode("|", $entradadec);
+    
+    $mes = $datosparciales[0];
+    $anio = $datosparciales[1];
+    $sede = $datosparciales[2];
+    
     $resultado = $datos->get_VentasFilt($mes, $anio, $sede);
     $total = $datos->get_VentasFiltTotal($mes, $anio, $sede);
 
     if ($resultado != 0) {
-
-$result->Data = $resultado;
-$result->Total = $total;
+        
+        $result->Data = $resultado;
+        $result->Total = $total;
         $res->Respuesta = $result;
         $res->Mensaje = "Ok";
         echo json_encode($res);

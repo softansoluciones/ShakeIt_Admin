@@ -1,139 +1,217 @@
 <?php
+
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/RelacionInsumos.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new RelacionInsumos();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new RelacionInsumos();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("RelacionInsumos.php/", $url);
 
-if (isset($_GET["relaciones"])) {
-
-    $resultado = $datos->get_Relaciones();
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_POST["relacionxprod"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_POST["relacionxprod"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
+}
 
-    $resultado = $datos->get_RelacionXPro($datosparciales[0]);
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "lista") {
+                        GetRelacionInsumos();
+                    } elseif ($accion == "producto") {
+                        GetRelacionInsumosXProducto($param1);
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveRelacionInsumos();
+                }elseif ($accion == "guardarMas") {
+                    SaveRelacionInsumosMas();
+                }elseif ($accion == "actualizar") {
+                    UpdateRelacionInsumos();
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            if ($accion == "eliminar") {
+                DeleteRelacionInsumos($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                echo json_encode($GLOBALS['res']);
+            }
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
+    }
+    
+
+function GetRelacionInsumos() {
+
+        $resultado = $GLOBALS['datos']->get_Relaciones();
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetRelacionInsumosXProducto($producto) {
+
+    $resultado = $GLOBALS['datos']->get_RelacionXPro($producto);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["insertar"])) {
+function SaveRelacionInsumos() {
 
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $pro = $_POST['id_producto'];
+    $ins = $_POST['id_insumo'];
+    $cant =$_POST['cantidad'];
 
-    $pro = $datosparciales[0];
-    $ins = $datosparciales[1];
-    $cant = $datosparciales[2];
+        $resultado = $GLOBALS['datos']->insert_Relacion($pro, $ins, $cant);
 
+        if ($resultado != 0) {
 
-    $resultado = $datos->insert_Relacion($pro, $ins, $cant);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["insertarmas"])) {
+function SaveRelacionInsumosMas() {
 
-    $data = $_POST["insertarmas"];
+    $data = $_POST["relacion_obj"];
 
-    $resultado = $datos->insert_RelacionMas($data);
+        $resultado = $GLOBALS['datos']->insert_RelacionMas($data);
 
-    if ($resultado != 0) {
+        if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["actualizar"])) {
+function UpdateRelacionInsumos() {
+    
+    $pro = $_POST['id_producto'];
+    $ins = $_POST['id_insumo'];
+    $cant =$_POST['cantidad'];
 
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->update_Relacion($pro, $ins, $cant);
 
+        if ($resultado != 0) {
 
-    $pro = $datosparciales[0];
-    $ins = $datosparciales[1];
-    $cant = $datosparciales[2];
-
-
-    $resultado = $datos->update_Relacion($pro, $ins, $cant);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["eliminar"])) {
+function DeleteRelacionInsumos($id) {
 
-    $entrada = $_POST["eliminar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->delete_Producto($id);
 
-    $pro = $datosparciales[0];
-    $ins = $datosparciales[1];
+        if ($resultado != 0) {
 
-    $resultado = $datos->delete_Relacion($pro, $ins);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se han eliminado los datos.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al eliminar información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }

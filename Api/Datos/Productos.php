@@ -36,17 +36,17 @@ class DProductos {
         return $db->executeQuery($sql);
     }
 
-    public function update_Producto($id, $nom, $nomG, $prec, $cat, $desc) {
+    public function update_Producto($id, $nom, $nomG, $prec, $cat, $desc, $img) {
 
-        $sql = "CALL Productos_Update('$id', '$nom', '$nomG', '$prec', '$cat', '$desc');";
+        $sql = "CALL Productos_Update('$id', '$nom', '$nomG', '$prec', '$cat', '$desc', '$img');";
         $db = new dbmanager( );
 
         return $db->executeQuery($sql);
     }
 
-    public function insert_Producto($id, $nom, $nomG, $prec, $cat, $desc) {
+    public function insert_Producto($id, $nom, $nomG, $prec, $cat, $desc, $img) {
 
-        $sql = "CALL Productos_Add('$id', '$nom', '$nomG', '$prec', '$cat', '$desc');";
+        $sql = "CALL Productos_Add('$id', '$nom', '$nomG', '$prec', '$cat', '$desc', '$img');";
         $db = new dbmanager();
 
         return $db->executeQuery($sql);

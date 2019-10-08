@@ -47,15 +47,9 @@ function show_Alerta(id) {
 
   update_Alertas(id);
 
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var alertas = {
-    "alerta": dataserverb
-  };
-
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Alertas.php',
+    url: 'Api/v1/Alertas.php/id/'+id,
     data: alertas,
     dataType: 'json',
     success: function (response) {
@@ -83,15 +77,9 @@ function show_Alerta(id) {
 
 function update_Alertas(id) {
 
-  var dataserver = id + '|Dato';
-  var dataserverb = window.btoa(dataserver);
-  var alertas = {
-    "actualizar": dataserverb
-  };
-
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Alertas.php/actualizar',
+    url: 'Api/v1/Alertas.php/actualizar/'+id,
     data: alertas,
     dataType: 'json',
     success: function (response) {
@@ -151,8 +139,7 @@ function NotificacionToast(cant) {
 function get_Cantidad2() {
 
   var xmlhttp = new XMLHttpRequest();
-  var param = window.btoa(GlobalUserid + '|' + "Dato");
-  var url = 'Api/v1/Alertas.php' + "?cantidad=" + param;
+  var url = 'Api/v1/Alertas.php/cantidad/'+GlobalUserid;
   //debugger
   xmlhttp.open("GET", url, true);
   xmlhttp.onreadystatechange = function () {

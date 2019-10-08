@@ -5,15 +5,15 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
-include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Clientes.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Ventas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
 $GLOBALS['token'] = new Tokens();
-$GLOBALS['datos'] = new Clientes();
+$GLOBALS['datos'] = new Ventas();
 $GLOBALS['res'] = new \stdClass();
 
 $url = $_SERVER['REQUEST_URI'];
-$urlservicios = explode("Clientes.php/", $url);
+$urlservicios = explode("Auxiliar.php/", $url);
 
 if (count($urlservicios) > 1) {
     $urlserviciosdes = explode("?", $urlservicios[1]);
@@ -47,11 +47,13 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
         
                 if ($accion != null) {
                     if ($accion == "lista") {
-                        GetClientes();
+                        GetVentas();
                     } elseif ($accion == "id") {
-                        GetClientesXId($param1);
-                    } elseif ($accion == "sede") {
-                        GetClientesXSede($param1);
+                        GetVentasXId($param1);
+                    }elseif ($accion == "detalle") {
+                        GetDetalleVenta($param1);
+                    } elseif ($accion == "filtros") {
+                        GetVentasFiltros();
                     }else {
                         $GLOBALS['res']->Respuesta = 0;
                         $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
@@ -67,10 +69,8 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
             case 'POST':
         
                 if ($accion == "guardar") {
-                    SaveClientes();
-                } elseif ($accion == "actualizar") {
-                    UpdateClientes($param1);
-                } else {
+                    SaveVentas();
+                }else {
                     $GLOBALS['res']->Respuesta = 0;
                     $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
                     echo json_encode($GLOBALS['res']);
@@ -88,7 +88,7 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
             case 'DELETE':
                 
             if ($accion == "eliminar") {
-                DeleteClientes($param1);
+                DeleteVentas($param1);
             } else {
                 $GLOBALS['res']->Respuesta = 0;
                 $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
@@ -110,13 +110,21 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
     }
     
 
-    function GetClientes() {
+function GetVentas() {
 
-        $resultado = $GLOBALS['datos']->get_Clientes($usuario);
+        $fecha = $_GET['fecha'];
+        $dia =   $_GET['dia'];
+        $mes =   $_GET['mes'];
+        $anio =  $_GET['anio'];
+        $sede =  $_GET['sede'];
+
+        $resultado = $GLOBALS['datos']->get_Ventas($fecha, $dia, $mes, $anio, $sede);
+        $total = $GLOBALS['datos']->get_VentasTotal($fecha, $dia, $mes, $anio, $sede);
 
         if ($resultado != 0) {
 
-            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Data = $resultado;
+            $GLOBALS['res']->Total = $total;
             $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
             echo json_encode($GLOBALS['res']);
         } else {
@@ -126,9 +134,31 @@ $tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
         }
 }
 
-function GetClientes() {
+function GetVentasFiltros() {
 
-    $resultado = $GLOBALS['datos']->get_Clientes();
+    $mes = $_GET['mes'];
+    $anio = $_GET['anio'];
+    $sede = $_GET['sede'];
+
+    $resultado = $GLOBALS['datos']->get_VentasFilt($mes, $anio, $sede);
+    $total = $GLOBALS['datos']->get_VentasFiltTotal($mes, $anio, $sede);
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Data = $resultado;
+        $GLOBALS['res']->Total = $total;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
+}
+
+function GetVentasXId($id) {
+
+    $resultado = $GLOBALS['datos']->get_Venta($id); 
 
     if ($resultado != 0) {
 
@@ -142,25 +172,9 @@ function GetClientes() {
     }
 }
 
-function GetClientesXId($id) {
+function GetDetalleVenta($id) {
 
-    $resultado = $GLOBALS['datos']->get_Cliente($id);
-
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
-function GetClientesXDoc($documento) {
-
-    $resultado = $GLOBALS['datos']->get_ClienteXDoc($documento);
+    $resultado = $GLOBALS['datos']->get_Detalle($id);
 
     if ($resultado != 0) {
 
@@ -174,107 +188,17 @@ function GetClientesXDoc($documento) {
     }
 }
 
-function GetClientesXTel($telefono) {
+function SaveVentas() {
 
-    $resultado = $GLOBALS['datos']->get_ClienteXTel($telefono);
+    $cant = $_GET['cantidad'];
+    $fac =     $_GET['factura'];
+    $sede =    $_GET['sede'];
+    $consumo = $_GET['consumo'];
+    $pago =    $_GET['pago'];
+    $ent =     $_GET['entidad'];
+    $val =     $_GET['valor'];
 
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
-function GetClientesXSede($sede) {
-
-    $resultado = $GLOBALS['datos']->get_ClientesXSede($sede);
-
-    if ($resultado != 0) {
-
-        $GLOBALS['res']->Respuesta = $resultado;
-        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-        echo json_encode($GLOBALS['res']);
-    } else {
-        $GLOBALS['res']->Respuesta = 0;
-        $GLOBALS['res']->Mensaje = "No existe información.";
-        echo json_encode($GLOBALS['res']);
-    }
-}
-
-function SaveClientes() {
-
-    if(isset($_POST['documento'])){
-        $doc = $_POST['documento'];
-    }else {
-        $doc = "";
-    }
-
-    if(isset($_POST['nombres'])){
-        $nom = $_POST['nombres'];
-    }else {
-        $nom = "";
-    }
-
-    if(isset($_POST['appellidos'])){
-        $ape = $_POST['appellidos'];
-    }else {
-        $ape = "";
-    }
-
-    if(isset($_POST['direccion'])){
-        $dir = $_POST['direccion'];
-    }else {
-        $dir = "";
-    }
-
-    if(isset($_POST['barrio'])){
-        $barr = $_POST['barrio'];
-    }else {
-        $barr = "";
-    }
-    
-    if(isset($_POST['municipio'])){
-        $mun = $_POST['municipio'];
-    }else {
-        $mun = "";
-    }
-
-    if(isset($_POST['telefono'])){
-        $tel = $_POST['telefono'];
-    }else {
-        $tel = "";
-    }
-
-    if(isset($_POST['usuario'])){
-        $us = $_POST['usuario'];
-    }else {
-        $us = "";
-    }
-
-    if(isset($_POST['password'])){
-        $pass = $_POST['password'];
-    }else {
-        $pass = "";
-    }
-
-    if(isset($_POST['email'])){
-        $email = $_POST['email'];
-    }else {
-        $email = "";
-    }
-
-    if(isset($_POST['fecha_nacimiento'])){
-        $nac = $_POST['fecha_nacimiento'];
-    }else {
-        $nac = "";
-    }
-
-        $resultado = $GLOBALS['datos']->insert_Cliete($doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+        $resultado = $GLOBALS['datos']->insert_Venta($cant, $fac, $sede, $consumo, $pago, $ent, $val);
 
         if ($resultado != 0) {
 
@@ -288,22 +212,18 @@ function SaveClientes() {
         }
 }
 
-function UpdateClientes($id) {
+function UpdateVentas($id) {
     
-    $id = $_POST['id'];
-    $doc = $_POST['documento'];
-    $nom = $_POST['nombres'];
-    $ape = $_POST['appellidos'];
-    $dir = $_POST['direccion'];
-    $barr = $_POST['barrio'];
-    $mun = $_POST['municipio'];
-    $tel = $_POST['telefono'];
-    $us = $_POST['usuario'];
-    $pass = $_POST['password'];
-    $email = $_POST['email'];
-    $nac = $_POST['fecha_nacimiento'];
+    $doc = $_POST['documento_usuario'];
+    $nom = $_POST['nombres_usuario'];
+    $ape = $_POST['apellidos_usuario'];
+    $tel = $_POST['telefono_usuario'];
+    $email =$_POST['email_usuario'];
+    $pass = $_POST['password_usuario'];
+    $tipo = $_POST['tipo_usuario'];
+    $estado = $_POST['estado_usuario'];
 
-        $resultado = $GLOBALS['datos']->update_Cliente($id, $doc, $nom, $ape, $dir, $barr, $mun, $tel, $us, $pass, $email, $nac);
+        $resultado = $GLOBALS['datos']->update_Usuario($id, $doc, $nom, $ape, $tel, $email, $pass, $tipo, $estado);
 
         if ($resultado != 0) {
 
@@ -317,9 +237,9 @@ function UpdateClientes($id) {
         }
 }
 
-function DeleteClientes($id) {
+function DeleteVentas($id) {
 
-        $resultado = $GLOBALS['datos']->delete_Clientes($id);
+        $resultado = $GLOBALS['datos']->delete_Usuario($id);
 
         if ($resultado != 0) {
 

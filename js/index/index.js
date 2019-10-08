@@ -22,22 +22,21 @@ function login() {
 
 function server() {
 
-  var id = $('#user').val();
+  var doc = $('#user').val();
   var pass = $('#pass').val();
-  if (id == pass) {
+  if (doc == pass) {
     var passc = pass;
   } else {
     var passc = hex_md5(pass);
   }
 
-  var dataserver = id + "|" + passc;
-  var dataserverb = window.btoa(dataserver);
   var bdatos = {
-    "login": dataserverb
+    "documento_usuario": doc,
+    "password_usuario": passc
   };
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Usuarios.php',
+    url: 'Api/v1/Usuarios.php/login',
     data: bdatos,
     dataType: 'json',
     success: function(response) {

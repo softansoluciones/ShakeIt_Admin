@@ -6,151 +6,239 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Sedes.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new Sedes();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new Sedes();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("Auxiliar.php/", $url);
 
-if (isset($_GET["sedes"])) {
-
-    $resultado = $datos->get_Sedes();
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_POST["sede"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_POST["sede"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
+}
 
-    $id = $datosparciales[0];
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "lista") {
+                        GetSedes();
+                    } elseif ($accion == "id") {
+                        GetSedesXId($param1);
+                    } elseif ($accion == "nombre") {
+                        GetSedesXNombre();
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveSedes();
+                }elseif ($accion == "actualizar") {
+                    UpdateSedes($param1);
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            if ($accion == "eliminar") {
+                DeleteSedes($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                echo json_encode($GLOBALS['res']);
+            }
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
+    }
+    
 
-    $resultado = $datos->get_Sede($id);
+    function GetSedes() {
+
+        $resultado = $GLOBALS['datos']->get_Sedes();
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetSedesXSede($sede) {
+
+    $resultado = $GLOBALS['datos']->get_SedesXSede($sede);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["sedexnom"])) {
+function GetSedesXId($id) {
 
-    $entrada = $_POST["sedexnom"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $nom = $datosparciales[0];
-
-    $resultado = $datos->get_SedeXNom($nom);
+    $resultado = $GLOBALS['datos']->get_Sede($id); 
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["insertar"])) {
+function GetSedesXNombre() {
 
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $nit = $datosparciales[0];
-    $nom = $datosparciales[1];
-    $dir = $datosparciales[2];
-    $mun = $datosparciales[3];
-    $tel1 = $datosparciales[4];
-    $tel2 = $datosparciales[5];
-    $tel3 = $datosparciales[6];
-    $long = $datosparciales[7];
-    $lat = $datosparciales[8];
-
-    $resultado = $datos->insert_Sede($nit, $nom, $dir, $mun, $tel1, $tel2, $tel3, $long, $lat);
+    $nombre= $_GET['nombre_sede'];
+    $resultado = $GLOBALS['datos']->get_SedeXNom($nombre); 
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["actualizar"])) {
+function SaveSedes() {
 
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $nit = $_POST['nit_sede'];
+    $nom = $_POST['nombre_sede'];
+    $dir = $_POST['direccion_sede'];
+    $mun = $_POST['municipio_sede'];
+    $tel1 =$_POST['tel1_sede'];
+    $tel2 =$_POST['tel2_sede'];
+    $tel3 =$_POST['tel3_sede'];
+    $long =$_POST['longitud_sede'];
+    $lat = $_POST['latitud_sede'];
 
-    $id = $datosparciales[0];
-    $nit = $datosparciales[1];
-    $nom = $datosparciales[2];
-    $dir = $datosparciales[3];
-    $mun = $datosparciales[4];
-    $tel1 = $datosparciales[5];
-    $tel2 = $datosparciales[6];
-    $tel3 = $datosparciales[7];
-    $long = $datosparciales[8];
-    $lat = $datosparciales[9];
+        $resultado = $GLOBALS['datos']->insert_Sede($nit, $nom, $dir, $mun, $tel1, $tel2, $tel3, $long, $lat);
 
+        if ($resultado != 0) {
 
-    $resultado = $datos->update_Sede($id, $nit, $nom, $dir, $mun, $tel1, $tel2, $tel3, $long, $lat);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["eliminar"])) {
+function UpdateSedes($id) {
+    
+    $nit = $_POST['nit_sede'];
+    $nom = $_POST['nombre_sede'];
+    $dir = $_POST['direccion_sede'];
+    $mun = $_POST['municipio_sede'];
+    $tel1 =$_POST['tel1_sede'];
+    $tel2 =$_POST['tel2_sede'];
+    $tel3 =$_POST['tel3_sede'];
+    $long =$_POST['longitud_sede'];
+    $lat = $_POST['latitud_sede'];
 
-    $entrada = $_POST["eliminar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->update_Sede($id, $nit, $nom, $dir, $mun, $tel1, $tel2, $tel3, $long, $lat);
 
-    $id = $datosparciales[0];
+        if ($resultado != 0) {
 
-    $resultado = $datos->delete_Sede($id);
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
 
-    if ($resultado != 0) {
+function DeleteSedes($id) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se han eliminado los datos.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al eliminar información.";
-        echo json_encode($res);
-    }
+        $resultado = $GLOBALS['datos']->delete_Sedes($id);
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }

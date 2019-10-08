@@ -86,11 +86,17 @@ class Productos {
         return $rows;
     }
 
-    public function insert_Producto($id, $nom, $nomG, $prec, $cat, $desc) {
+    public function insert_Producto($id, $nom, $nomG, $prec, $cat, $desc, $img) {
 
         $datos = new DProductos();
 
-        $result = $datos->insert_Producto($id, $nom, $nomG, $prec, $cat, $desc);
+        if ($img == 0) {
+            $file = 0;
+        } else {
+            $file = $this->save_File($img, $cat, $id);
+        }
+
+        $result = $datos->insert_Producto($id, $nom, $nomG, $prec, $cat, $desc, $file);
 
         if ($result == TRUE) {
             $rows = 1;
@@ -100,11 +106,17 @@ class Productos {
         return $rows;
     }
 
-    public function update_Producto($id, $nom, $nomG, $prec, $cat, $desc) {
+    public function update_Producto($id, $nom, $nomG, $prec, $cat, $desc, $img) {
 
         $datos = new DProductos();
 
-        $result = $datos->update_Producto($id, $nom, $nomG, $prec, $cat, $desc);
+        if ($img == 0) {
+            $file = 0;
+        } else {
+            $file = $this->save_File($img, $cat, $id);
+        }
+
+        $result = $datos->update_Producto($id, $nom, $nomG, $prec, $cat, $desc, $file);
 
         if ($result == TRUE) {
             $rows = 1;
@@ -112,6 +124,17 @@ class Productos {
             $rows = 0;
         }
         return $rows;
+    }
+
+    public function save_File($file, $cat, $id) {
+
+        $info = pathinfo($file['name']);
+        $ext = $info['extension']; // get the extension of the file
+        $newname = date("Y") . "_" . date("m") . "_" . date("d") . "_" . $id . "_" . $cat . "." . $ext;
+
+        $target = $_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/media/Productos' . $newname;
+        move_uploaded_file($file['tmp_name'], $target);
+        return $newname;
     }
 
 }

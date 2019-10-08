@@ -6,244 +6,312 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('content-type: application/json; charset=utf-8');
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Inventario.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/Api/Logica/Tokens.php');
 
+$GLOBALS['token'] = new Tokens();
+$GLOBALS['datos'] = new Inventario();
+$GLOBALS['res'] = new \stdClass();
 
-$datos = new Inventario();
-$res = new \stdClass();
+$url = $_SERVER['REQUEST_URI'];
+$urlservicios = explode("Inventario.php/", $url);
 
-if (isset($_GET["inventario"])) {
-
-    $resultado = $datos->get_Inventario();
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+if (count($urlservicios) > 1) {
+    $urlserviciosdes = explode("?", $urlservicios[1]);
+    $urlserviciosget = explode("/", $urlservicios[1]);
+    if (count($urlserviciosdes) > 1) {
+        $accion = $urlserviciosdes[0];
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $accion = $urlserviciosget[0];
+    }
+    if (count($urlserviciosget) > 1) {
+        $param1 = $urlserviciosget[1];
+        if (count($urlserviciosget) > 2) {
+            $param2 = $urlserviciosget[2];
+        }
     }
 }
 
-if (isset($_GET["inventarioxsede"])) {
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-    $entrada = $_POST["inventarioxsede"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
+    $GLOBALS['tokenhash'] = $_SERVER['HTTP_AUTHTOKEN'];
+} else {
+    $GLOBALS['tokenhash'] = "noauth";
+}
 
-    $id = $datosparciales[0];
+$tokenres = $GLOBALS['token']->get_TokenEstado($GLOBALS['tokenhash']);
+    if ($tokenres[0]['estado'] == 1) {
+        
+        switch ($metodo) {
+            case 'GET':
+        
+                if ($accion != null) {
+                    if ($accion == "lista") {
+                        GetInventario();
+                    } elseif ($accion == "sede") {
+                        GetInventarioXSede($param1);
+                    }elseif ($accion == "id") {
+                        GetInventarioXId($param1);
+                    } elseif ($accion == "iden") {
+                        GetInventarioIden($param1);
+                    }else {
+                        $GLOBALS['res']->Respuesta = 0;
+                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                        echo json_encode($GLOBALS['res']);
+                    }
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'POST':
+        
+                if ($accion == "guardar") {
+                    SaveInventario();
+                }elseif ($accion == "guardarMas") {
+                    SaveInventarioMas();
+                }elseif ($accion == "guardarDia") {
+                    SaveInventarioDia();
+                }elseif ($accion == "guardarIden") {
+                    SaveInventarioIden();
+                }elseif ($accion == "guardarProducto") {
+                    SaveInventarioProductos();
+                } elseif ($accion == "actualizar") {
+                    UpdateInventario($param1);
+                } else {
+                    $GLOBALS['res']->Respuesta = 0;
+                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                    echo json_encode($GLOBALS['res']);
+                }
+                break;
+        
+            case 'PUT':
+        
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+        
+                break;
+        
+            case 'DELETE':
+                
+            if ($accion == "eliminar") {
+                DeleteInventario($param1);
+            } else {
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+                echo json_encode($GLOBALS['res']);
+            }
+        
+                break;
+        
+            default:
+                $GLOBALS['res']->Respuesta = 0;
+                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+                echo json_encode($GLOBALS['res']);
+                break;
+        }
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+        echo json_encode($GLOBALS['res']);
+    }
+    
 
-    $resultado = $datos->get_InventarioXSede($id);
+    function GetInventario() {
+
+        $resultado = $GLOBALS['datos']->get_Inventario();
+
+        if ($resultado != 0) {
+
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "No existe información.";
+            echo json_encode($GLOBALS['res']);
+        }
+}
+
+function GetInventarioXSede($sede) {
+
+    $resultado = $GLOBALS['datos']->get_InventarioXSede($sede);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["inventarioxid"])) {
+function GetInventarioXId($id) {
 
-    $entrada = $_POST["inventarioxid"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-
-    $resultado = $datos->get_InventarioOne($id);
+    $resultado = $GLOBALS['datos']->get_InventarioOne($id);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["inventarioiden"])) {
+function GetInventarioIden($id) {
 
-    $entrada = $_POST["inventarioiden"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
-
-    $id = $datosparciales[0];
-
-    $resultado = $datos->get_InventarioIden($id);
+    $resultado = $GLOBALS['datos']->get_InventarioIden($id);
 
     if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Ok";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
     } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "No existen datos.";
-        echo json_encode($res);
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
     }
 }
 
-if (isset($_POST["insertar"])) {
+function SaveInventario() {
 
-    $entrada = $_POST["insertar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $ins = $_POST['id_insumo'];
+    $cant = $_POST['cantidad_insumo'];
+    $sed = $_POST['sede_insumo'];
 
-    $ins = $datosparciales[0];
-    $cant = $datosparciales[1];
-    $sed = $datosparciales[2];
+        $resultado = $GLOBALS['datos']->insert_Inventario($ins, $cant, $sed);;
 
-    $resultado = $datos->insert_Inventario($ins, $cant, $sed);
+        if ($resultado != 0) {
 
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["insertarmas"])) {
+function SaveInventarioMas() {
+    
+    $data = $_POST["imsumos_obj"];
 
-    $data = $_POST["insertarmas"];
+        $resultado = $GLOBALS['datos']->insert_InventarioMas($data);
 
-    $resultado = $datos->insert_InventarioMas($data);
+        if ($resultado != 0) {
 
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["insertardia"])) {
+function SaveInventarioDia() {
 
-    $entrada = $_POST["insertardia"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $ins = $_POST['id_insumo'];
+    $cant = $_POST['cantidad_insumo'];
+    $sed = $_POST['sede_insumo'];
 
-    $ins = $datosparciales[0];
-    $cant = $datosparciales[1];
-    $iden = $datosparciales[2];
+        $resultado = $GLOBALS['datos']->insert_InventarioDia($ins, $cant, $sed);
 
-    $resultado = $datos->insert_InventarioDia($ins, $cant, $iden);
+        if ($resultado != 0) {
 
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["insertariden"])) {
+function SaveInventarioIden() {
 
-    $entrada = $_POST["insertariden"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+    $iden = $_POST['identificador'];
+    $est = $_POST['estado_identificador'];
+    $sed = $_POST['sede_identificador'];
 
-    $iden = $datosparciales[0];
-    $est = $datosparciales[1];
-    $sed = $datosparciales[2];
+        $resultado = $GLOBALS['datos']->insert_InventarioIden($iden, $est, $sed);
 
-    $resultado = $datos->insert_InventarioIden($iden, $est, $sed);
+        if ($resultado != 0) {
 
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["productos"])) {
+function SaveInventarioProductos() {
 
     $data = $_POST["productos"];
 
-    $resultado = $datos->Recorrer_Producto($data);
+        $resultado = $GLOBALS['datos']->Recorrer_Producto($data);
 
-    if ($resultado != 0) {
+        if ($resultado != 0) {
 
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha registrado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al registrar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["actualizar"])) {
+function UpdateInventario($id) {
+    
+    $ins = $_POST['id_insumo'];
+    $cant = $_POST['cantidad_insumo'];
+    $sed = $_POST['sede_insumo'];
 
-    $entrada = $_POST["actualizar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->update_Inventario($id, $ins, $cant, $sed);
 
-    $id = $datosparciales[0];
-    $ins = $datosparciales[1];
-    $cant = $datosparciales[2];
-    $sed = $datosparciales[3];
+        if ($resultado != 0) {
 
-    $resultado = $datos->update_Inventario($id, $ins, $cant, $sed);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se ha actualizado la información con éxito.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al actualizar la información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al registrar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }
 
-if (isset($_POST["eliminar"])) {
+function DeleteInventario($id) {
 
-    $entrada = $_POST["eliminar"];
-    $entradadec = utf8_encode(base64_decode($entrada));
-    $datosparciales = explode("|", $entradadec);
+        $resultado = $GLOBALS['datos']->delete_Inventario($id);
 
-    $id = $datosparciales[0];
+        if ($resultado != 0) {
 
-    $resultado = $datos->delete_Inventario($id);
-
-    if ($resultado != 0) {
-
-        $res->Respuesta = $resultado;
-        $res->Mensaje = "Se han eliminado los datos.";
-        echo json_encode($res);
-    } else {
-        $res->Respuesta = 0;
-        $res->Mensaje = "Error al eliminar información.";
-        echo json_encode($res);
-    }
+            $GLOBALS['res']->Respuesta = $resultado;
+            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+            echo json_encode($GLOBALS['res']);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+            echo json_encode($GLOBALS['res']);
+        }
 }

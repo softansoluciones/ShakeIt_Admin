@@ -15,7 +15,7 @@ class DSedes {
     public function get_Sede($id) {
 
         $sql = "call Sedes_GetXId('$id');";
-        $db = new dbmanager( );
+        $db = new dbmanager();
 
         return $db->executeQuery($sql);
     }

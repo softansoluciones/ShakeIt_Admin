@@ -132,7 +132,7 @@ class Productos {
         $ext = $info['extension']; // get the extension of the file
         $newname = date("Y") . "_" . date("m") . "_" . date("d") . "_" . $id . "_" . $cat . "." . $ext;
 
-        $target = $_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/media/Productos' . $newname;
+        $target = $_SERVER['DOCUMENT_ROOT'] . '/ShakeIt_Admin/media/Productos/' . $newname;
         move_uploaded_file($file['tmp_name'], $target);
         return $newname;
     }

@@ -127,4 +127,15 @@ class Tokens {
         return $rows;
     }
 
+    public function tokenV($token) {
+
+        $tokenres = $this->get_TokenEstado($token);
+        if ($tokenres[0]['estado'] != 1) {
+            $GLOBALS['res']->Respuesta = 28;
+            $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
+            echo json_encode($GLOBALS['res']);
+            exit();
+        }
+    }
+
 }

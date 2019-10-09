@@ -172,18 +172,15 @@ var getUrlParameter = function getUrlParameter(sParam) {
 function Get_UsuarioMod() {
 
     var userlid = parseInt(sessionStorage.getItem("id_user"))
-
-    var dataserver = userlid + '|' + "Dato"
-    var dataserverb = window.btoa(dataserver);
-    var usuario = {
-        "usuarioxid": dataserverb
-    };
+    var locToken = sessionStorage.getItem("token")
 
     $.ajax({
         type: 'GET',
-        url: 'Api/Servicios/Usuarios.php',
-        data: usuario,
+        url: 'Api/v1/Usuarios.php/id/'+userlid,
         dataType: 'json',
+        headers: {
+            "authtoken": locToken
+        },
         success: function (response) {
             if (response.Respuesta != 0) {
                 //debugger
@@ -222,4 +219,24 @@ function sesionUs(idus, nomus, apeus, tipus, nomtipus) {
     sessionStorage.setItem("nom_user", nomus + " " + apeus);
     sessionStorage.setItem("tipo_user", tipus);
     sessionStorage.setItem("nomtipo_user", nomtipus);
+}
+
+//Cambia un text a date type y viceversa
+
+function inputFile(input) {
+
+    var valinput = $(input).val();
+
+    if (valinput.length == 0) {
+        $(input).prop('type', 'file');
+    }
+}
+
+function inputFileText(input) {
+
+    var valinput = $(input).val();
+
+    if (valinput.length == 0) {
+        $(input).prop('type', 'text');
+    }
 }

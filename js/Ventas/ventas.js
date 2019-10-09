@@ -1,19 +1,27 @@
 function Load_Ventas(fecha, dia, mes, anio, sede) {
-  var dataserver = fecha + "|" + dia + "|" + mes + "|" + anio + "|" + sede
-  var dataserverb = window.btoa(dataserver);
+
   var ventas = {
-    "ventas": dataserverb
+    "fecha": fecha,
+    "dia": dia,
+    "mes": mes,
+    "anio": anio,
+    "sede": sede,
+
   };
+
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Ventas.php',
+    url: 'Api/v1/Ventas.php/filtros',
     data: ventas,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
 
         $('#tab_Ventas').html('')
-        $.each(response.Respuesta.Data, function(i, item) {
+        $.each(response.Respuesta.Data, function (i, item) {
           $('#tab_Ventas').append('<tr><th scope="row">' + item.id_venta + '</th><td>' + item.num_factura + '</td><td>' + item.cant_productos + '</td><td>' + item.nom_consumo + '</td><td>' + item.nommedio_pago + '</td><td>' + item.nom_entidad + '</td><td>' + item.val_venta + '</td><td>' + item.fecha + '</td><td>' + item.hora + '</td><td>' + item.nom_sede + '</td><td><a class="btn btn_sh_normal btn-sm" href="javascript: showVenta(' + item.id_venta + ')" role="button">Detalle</a></td></tr>')
         });
         $('#vtotal').html(response.Respuesta.Total[0].total);
@@ -28,11 +36,11 @@ function Load_Ventas(fecha, dia, mes, anio, sede) {
         $("#filtrosd").slideUp("slow");
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $('#tab_Ventas').html('<center><div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></center>')
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
     $('#modal_msg').modal({
@@ -48,20 +56,24 @@ function Load_Ventas(fecha, dia, mes, anio, sede) {
 
 function Load_VentasAnio(mes, anio, sede) {
 
-  var dataserver = mes + "|" + anio + "|" + sede
-  var dataserverb = window.btoa(dataserver);
   var ventas = {
-    "ventasfilt": dataserverb
+    "mes": mes,
+    "anio": anio,
+    "sede": sede,
   };
+
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Ventas.php',
+    url: 'Api/v1/Ventas.php/filtroanio',
     data: ventas,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#tab_Ventas').html('')
-        $.each(response.Respuesta.Data, function(i, item) {
+        $.each(response.Respuesta.Data, function (i, item) {
           $('#tab_Ventas').append('<tr><th scope="row">' + item.id_venta + '</th><td>' + item.num_factura + '</td><td>' + item.cant_productos + '</td><td>' + item.nom_consumo + '</td><td>' + item.nommedio_pago + '</td><td>' + item.nom_entidad + '</td><td>' + item.val_venta + '</td><td>' + item.fecha + '</td><td>' + item.hora + '</td><td>' + item.nom_sede + '</td><td><a class="btn btn_sh_normal btn-sm" href="javascript: showVenta(' + item.id_venta + ')" role="button">Detalle</a></td></tr>')
         });
         $('#vtotal').html(response.Respuesta.Total[0].total);
@@ -76,11 +88,11 @@ function Load_VentasAnio(mes, anio, sede) {
         $("#filtrosa").slideUp("slow");
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $('#tab_Ventas').html('<center><div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></center>')
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
     $('#modal_msg').modal({
@@ -96,17 +108,15 @@ function Load_VentasAnio(mes, anio, sede) {
 
 function showVenta(id) {
 
-  var dataserver = id + "|dato"
-  var dataserverb = window.btoa(dataserver);
-  var venta = {
-    "venta": dataserverb
-  };
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Ventas.php',
+    url: 'Api/v1/Ventas.php/id/' + id,
     data: venta,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#det_sede').html('<strong>Sede:</strong> ' + response.Respuesta[0].nom_sede)
         $('#det_fac').html('<strong>Factura:</strong> ' + response.Respuesta[0].num_factura)
@@ -126,10 +136,10 @@ function showVenta(id) {
         })
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $('#tab_DetVentas').html('<center><div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></center>')
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
     $('#modal_msg').modal({
@@ -143,20 +153,18 @@ function showVenta(id) {
 
 function verDetalle(id) {
 
-  var dataserver = id + "|dato"
-  var dataserverb = window.btoa(dataserver);
-  var detalle = {
-    "detalle": dataserverb
-  };
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Ventas.php',
+    url: 'Api/v1/Ventas.php/detalle/' + id,
     data: detalle,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#tab_DetVentas').html('')
-        $.each(response.Respuesta, function(i, item) {
+        $.each(response.Respuesta, function (i, item) {
           $('#tab_DetVentas').append('<tr><th scope="row">' + item.fk_producto + '</th><td>' + item.nom_producto + '</td><td>' + item.cant_vendido + '</td><td>' + item.precio_producto + '</td><td>' + item.descuento + '</td><td>' + item.Total + '</td></tr>')
         });
         $('#det_mod_venta').modal({
@@ -174,10 +182,10 @@ function verDetalle(id) {
         })
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $('#tab_DetVentas').html('<center><div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></center>')
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
     $('#modal_msg').modal({
@@ -287,7 +295,7 @@ function filtros(tfilt) {
 
 function verFMarca() {
   var criterio;
-  $("a[name ='filter_pv']").each(function() {
+  $("a[name ='filter_pv']").each(function () {
     if ($(this).hasClass('active_nav')) {
       criterio = $(this).data("criterio");
     }
@@ -301,12 +309,12 @@ function filterPV(link) {
 }
 
 function removeActiveFilter() {
-  $("a[name ='filter_pv']").each(function() {
+  $("a[name ='filter_pv']").each(function () {
     $(this).removeClass("active_nav");
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   Load_Ventas('0-0-0', 1, 0, 0, 0);
   Get_SedesSel("#fpvSedes");
   Get_SedesSel("#fpvSedesa");

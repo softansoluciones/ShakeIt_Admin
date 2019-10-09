@@ -3,8 +3,11 @@ function Load_Alertas() {
 
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Alertas.php/alertas/GlobalUserid',
+    url: 'Api/v1/Alertas.php/alertas/'+GlobalUserid,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+  },
     success: function (response) {
       if (response.Respuesta != 0) {
         $('#divCards').html('')
@@ -50,8 +53,10 @@ function show_Alerta(id) {
   $.ajax({
     type: 'GET',
     url: 'Api/v1/Alertas.php/id/'+id,
-    data: alertas,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+  },
     success: function (response) {
       if (response.Respuesta != 0) {
         $("#alertas_modTittle").html(response.Respuesta[0].nom_alerta);
@@ -80,8 +85,10 @@ function update_Alertas(id) {
   $.ajax({
     type: 'POST',
     url: 'Api/v1/Alertas.php/actualizar/'+id,
-    data: alertas,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+  },
     success: function (response) {
       if (response.Respuesta != 0) {
         $('#alerta_' + id).removeClass('text-white bg-primary');

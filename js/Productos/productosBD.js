@@ -8,18 +8,17 @@ function Load_Productos() {
 
   $('#modal_msg').modal('hide');
 
-  var productos = {
-    "productos": "productos"
-  };
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Productos.php',
-    data: productos,
+    url: 'Api/v1/Productos.php/lista',
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#tab_ProBody').html('')
-        $.each(response.Respuesta, function(i, item) {
+        $.each(response.Respuesta, function (i, item) {
           $('#tab_ProBody').append('<tr>\n\
                    <th scope="row">' + item.id_producto + '</th>\n\
                    <td>' + item.nom_producto + '</td>\n\
@@ -34,10 +33,10 @@ function Load_Productos() {
         $('#tab_ProBody').html(response.Mensaje)
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $('#tab_ProBody').html('<center><div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></center>')
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
     $('#modal_msg').modal({
@@ -50,18 +49,14 @@ function Load_Productos() {
 
 function show_Producto(id) {
 
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var producto = {
-    "producto": dataserverb
-  };
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Productos.php',
-    data: producto,
+    type: 'GET',
+    url: 'Api/v1/Productos.php/id/' + id,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $("#pro_mod_nuevo_insumos").html("")
         $("#num_ins").val(0);
@@ -71,6 +66,14 @@ function show_Producto(id) {
         $('#pro_prece').val(response.Respuesta[0].precio_producto)
         $('#pro_cate').val(response.Respuesta[0].fk_categoria)
         $('#pro_desce').val(response.Respuesta[0].descripcion_producto)
+        if(response.Respuesta[0].imagen_producto == null || response.Respuesta[0].imagen_producto == 0){
+          $('#pro_imge').prop('type', 'file')
+        }else{
+          $('#pro_imge').prop('type', 'text')
+          $('#pro_imge').val(response.Respuesta[0].imagen_producto)
+          $('#pro_img').html('')
+          $('#pro_img').html('<center><img src="media/Productos/'+response.Respuesta[0].imagen_producto+'" alt="..." class="img-thumbnail"></center>')
+        }
         Get_InsumosProd(id)
       } else {
         $("#btns").html("<a class='btn btn-danger btn-sm' data-dismiss='modal' aria-label='Close' role='button'>Aceptar</a>");
@@ -82,10 +85,10 @@ function show_Producto(id) {
         })
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#ins_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -99,21 +102,17 @@ function show_Producto(id) {
 
 function Get_InsumosProd(id) {
 
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var producto = {
-    "relacionxprod": dataserverb
-  };
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/RelacionInsumos.php',
-    data: producto,
+    type: 'GET',
+    url: 'Api/v1/RelacionInsumos.php/producto/' + id,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $("#pro_mod_editar_insumos").html("")
-        $.each(response.Respuesta, function(i, item) {
+        $.each(response.Respuesta, function (i, item) {
           $('#pro_mod_editar_insumos').append('\
                     <div class="alert alert-primary row" role="alert" id="regIns-' + item.fk_insumo + '">\n\
                     <div class="col-5" style="display: none;"><input id="ins_i" name="ins_gd" value="' + item.fk_insumo + '" /></div>\n\
@@ -130,10 +129,10 @@ function Get_InsumosProd(id) {
         show: true
       })
     },
-    beforeSend: function() {
+    beforeSend: function () {
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#ins_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -147,20 +146,14 @@ function Get_InsumosProd(id) {
 
 function delete_Relacion(pro, ins) {
 
-  var dataserver = pro + '|' + ins
-  var dataserverb = window.btoa(dataserver);
-  var persona = {
-    "eliminar": dataserverb
-  };
-
-  console.log(dataserverb);
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/RelacionInsumos.php',
-    data: persona,
+    type: 'DELETE',
+    url: 'Api/v1/RelacionInsumos.php/eliminar/' + pro + '/' + ins,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#regIns-' + ins).remove();
       } else {
@@ -168,10 +161,10 @@ function delete_Relacion(pro, ins) {
         $('#msg_alert_mod').show('fast');
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#pro_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -190,21 +183,38 @@ function update_producto() {
   var prec = $('#pro_prece').val();
   var cat = $('#pro_cate').val();
   var desc = $('#pro_desce').val();
+  var img = $('#pro_imge').val();
 
-  var dataserver = id + '|' + nom + '|' + nomG + '|' + prec + '|' + cat + '|' + desc
-  var dataserverb = window.btoa(dataserver);
-  var persona = {
-    "actualizar": dataserverb
-  };
 
-  console.log(dataserverb);
+  if (img.length == 0) {
+    img = 0;
+  }else{
+    img = $('#pro_imge').get(0).files;
+  }
+
+  alert(img);
+
+  var producto = new FormData();
+
+  producto.append("Id_Producto", id);
+  producto.append("nombre_Producto", nom);
+  producto.append("nombreG_Producto", nomG);
+  producto.append("precio_Producto", prec);
+  producto.append("categoria_Producto", cat);
+  producto.append("descripcion_Producto", desc);
+  producto.append("imagen_Producto", img[0]);
 
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Productos.php',
-    data: persona,
+    url: 'Api/v1/Productos.php/actualizar/' + id,
+    data: producto,
     dataType: 'json',
-    success: function(response) {
+    contentType: false,
+    processData: false,
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#pro_mod_editar').modal('hide')
         $("#btns").html("<a class='btn btn-danger btn-sm' href='javascript: Vista_Productos()' role='button'>Aceptar</a>");
@@ -227,11 +237,11 @@ function update_producto() {
         $("#proActualizando").hide()
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $("#proActualizar").hide()
       $("#proActualizando").show()
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#pro_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -246,7 +256,7 @@ function insert_RelacionMas(datos, val) {
 
   INFO = new FormData();
   var ainfo = JSON.stringify(datos);
-  INFO.append('insertarmas', ainfo);
+  INFO.append('relacion_obj', ainfo);
 
   $.ajax({
 
@@ -255,8 +265,11 @@ function insert_RelacionMas(datos, val) {
     contentType: false,
     cache: false,
     data: INFO,
-    url: 'Api/v1/RelacionInsumos.php',
-    success: function(response) {
+    url: 'Api/v1/RelacionInsumos.php/guardarMas',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
 
       if (response.Respuesta != 0) {
 
@@ -268,10 +281,10 @@ function insert_RelacionMas(datos, val) {
 
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#pro_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -286,20 +299,14 @@ function insert_RelacionMas(datos, val) {
 
 function delete_productos(id) {
 
-  var dataserver = id + '|' + 'dato'
-  var dataserverb = window.btoa(dataserver);
-  var producto = {
-    "eliminar": dataserverb
-  };
-
-  console.log(dataserverb);
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Productos.php',
-    data: producto,
+    type: 'DELETE',
+    url: 'Api/v1/Productos.php/eliminar/' + id,
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#pro_mod_editar').modal('hide')
         $("#btns").html("<a class='btn btn-danger btn-sm' href='javascript: Vista_Productos()' role='button'>Aceptar</a>");
@@ -320,10 +327,10 @@ function delete_productos(id) {
         })
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
 
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#pro_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
@@ -336,16 +343,14 @@ function delete_productos(id) {
 
 function id_producto() {
 
-  var request = {
-    "getid": "getid"
-  };
-
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Productos.php',
-    data: request,
+    url: 'Api/v1/Productos.php/nid',
     dataType: 'json',
-    success: function(response) {
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
 
       $("#pro_idg").val(response.Respuesta[0].nid);
 
@@ -361,21 +366,35 @@ function insert_producto() {
   var prec = $('#pro_precg').val();
   var cat = $('#pro_catg').val();
   var desc = $('#pro_descg').val();
+  var img = $('#pro_imgg').val();
 
-  var dataserver = id + '|' + nom + '|' + nomG + '|' + prec + '|' + cat + '|' + desc
-  var dataserverb = window.btoa(dataserver);
-  var producto = {
-    "insertar": dataserverb
-  };
+  if (img.length == 0) {
+    img = 0;
+  }else{
+    img = $('#pro_imgg').get(0).files;
+  }
 
-  console.log(dataserverb);
+  var producto = new FormData();
+
+  producto.append("Id_Producto", id);
+  producto.append("nombre_Producto", nom);
+  producto.append("nombreG_Producto", nomG);
+  producto.append("precio_Producto", prec);
+  producto.append("categoria_Producto", cat);
+  producto.append("descripcion_Producto", desc);
+  producto.append("imagen_Producto", img[0]);
 
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Productos.php',
+    url: 'Api/v1/Productos.php/guardar',
     data: producto,
     dataType: 'json',
-    success: function(response) {
+    contentType: false,
+    processData: false,
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function (response) {
       if (response.Respuesta != 0) {
         $('#pro_mod_editar').modal('hide')
         $("#btns").html("<a class='btn btn-danger btn-sm' href='javascript: Vista_ProductosReg()' role='button'>Aceptar</a>");
@@ -398,11 +417,11 @@ function insert_producto() {
         $("#proGuardando").hide()
       }
     },
-    beforeSend: function() {
+    beforeSend: function () {
       $("#proGuardar").hide()
       $("#proGuardando").show()
     }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     $('#pro_mod_editar').modal('hide')
     $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
     $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");

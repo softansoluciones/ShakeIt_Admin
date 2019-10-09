@@ -12,11 +12,11 @@ and open the template in the editor.
 
 <head>
 
-  <script src="js/Comunes/comunes.js" type="text/javascript"></script>
+    <script src="js/Comunes/comunes.js" type="text/javascript"></script>
 
-<script src="js/Inventario/inventarioBD.js" type="text/javascript"></script>
+    <script src="js/Inventario/inventarioBD.js" type="text/javascript"></script>
 
-  <script src="js/Inventario/inventario.js" type="text/javascript"></script>
+    <script src="js/Inventario/inventario.js" type="text/javascript"></script>
 
 </head>
 
@@ -24,141 +24,146 @@ and open the template in the editor.
 
 <body class="">
 
-  <div>
+    <div>
 
-      <ul class="nav justify-content-end optionsBar">
+        <ul class="nav justify-content-end optionsBar">
 
-          <li class="nav-item">
+            <li class="nav-item">
 
-              <a class="nav-link anav" href="javascript: formGuardar()" >Agregar</a>
+                <a class="nav-link anav" href="javascript: formGuardar()">Agregar</a>
 
-          </li>
+            </li>
 
-      </ul>
+        </ul>
 
-      <br>
+        <br>
 
-      <br>
+        <br>
 
-      <center>
+        <center>
 
-          <h4>INVENTARIO</h4>
+            <h4>INVENTARIO</h4>
 
-      </center>
+        </center>
 
-      <div class="col d-flex justify-content-end">
+        <div class="col d-flex justify-content-end">
 
-                   <input type="text" id="filtrar" class="form-control" placeholder="Buscar Insumo..." onkeyup="buscarD('tab_InvBody');">
+            <input type="text" id="filtrar" class="form-control" placeholder="Buscar Insumo..."
+                onkeyup="buscarD('tab_InvBody');">
 
-               </div>
+        </div>
 
-      <hr>
+        <hr>
 
-  </div>
+    </div>
 
-      <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
+    <div class="table-responsive" style="overflow-y: Auto; height: calc(100% - 195px);">
 
-          <table class="table table-borderless">
+        <table class="table table-borderless">
 
-              <thead>
+            <thead>
 
-                  <tr>
+                <tr>
 
-                      <th>#</th>
+                    <th>#</th>
 
-                      <th>Insumo</th>
+                    <th>Insumo</th>
 
-                      <th>Cantidad</th>
+                    <th>Cantidad</th>
 
-                      <th>Unidad</th>
+                    <th>Unidad</th>
 
-                      <th>Sede</th>
+                    <th>Sede</th>
 
-                      <th>-</th>
+                    <th>-</th>
 
-                      <th>-</th>
+                    <th>-</th>
 
-                  </tr>
+                </tr>
 
-              </thead>
+            </thead>
 
-              <tbody id="tab_InvBody">
+            <tbody id="tab_InvBody">
 
-              </tbody>
+            </tbody>
 
-          </table>
+        </table>
 
-      </div>
+    </div>
 
 
 
-      <!---- Modal Registro------->
+    <!---- Modal Registro------->
 
-      <div id="inv_mod_guardar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div id="inv_mod_guardar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
+        aria-labelledby="myLargeModalLabel" aria-hidden="true">
 
-          <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg">
 
-              <div class="modal-content">
+            <div class="modal-content">
 
-                  <div class="modal-header">
+                <div class="modal-header">
 
-                      <h5 class="modal-title" id="exampleModalLongTitle">Registro de inventario.</h5>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Registro de inventario.</h5>
 
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 
-                          <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
 
-                      </button>
+                    </button>
 
-                  </div>
+                </div>
 
-                  <div class="modal-body">
+                <div class="modal-body">
 
-                      <form>
+                    <form>
 
-                          <div id="msg_alert_modG" class="alert alert-dark" role="alert" style="display: none;">
+                        <div id="msg_alert_modG" class="alert alert-dark" role="alert" style="display: none;">
 
-                          </div>
+                        </div>
 
-                          <div class="form-group row">
+                        <div class="form-group row">
 
-                              <div class="form-group col-md-6">
+                            <div class="form-group col-md-6">
 
-                                  <select class="form-control" id="inv_ins" name="inv_g" campo="Insumo" onchange='removec(this), Get_InsiumoXId(this, "#inv_unidad")'>
+                                <select class="form-control" id="inv_ins" name="inv_g" campo="Insumo"
+                                    onchange='removec(this), Get_InsiumoXId(this, "#inv_unidad")'>
 
-                                      <option selected value=''>Seleccione Insumo</option>
+                                    <option selected value=''>Seleccione Insumo</option>
 
-                                  </select>
+                                </select>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-3">
+                            <div class="form-group col-md-3">
 
-                                  <input type="number" class="form-control" id="inv_cant" name="inv_g" campo="Cantidad" placeholder="Cantidad" onchange='removec(this)'>
+                                <input type="number" class="form-control" id="inv_cant" name="inv_g" campo="Cantidad"
+                                    placeholder="Cantidad" onchange='removec(this)'>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-3">
+                            <div class="form-group col-md-3">
 
-                                  <input type="text" class="form-control" id="inv_unidad" name="inv_g" campo="Unidad" placeholder="Unidad" onchange='removec(this)' readonly='readonly'>
+                                <input type="text" class="form-control" id="inv_unidad" name="inv_g" campo="Unidad"
+                                    placeholder="Unidad" onchange='removec(this)' readonly='readonly'>
 
-                              </div>
+                            </div>
 
-                          </div>
+                        </div>
 
-                          <table class="table table-sm">
+                        <table class="table table-sm">
 
                             <thead>
 
-                              <tr>
+                                <tr>
 
-                                <th>#</th>
+                                    <th>#</th>
 
-                                <th>Sede</th>
+                                    <th>Sede</th>
 
-                                <th>Seleccionar</th>
+                                    <th>Seleccionar</th>
 
-                              </tr>
+                                </tr>
 
                             </thead>
 
@@ -166,127 +171,135 @@ and open the template in the editor.
 
                             </tbody>
 
-                          </table>
+                        </table>
 
-                      </form>
+                    </form>
 
-                  </div>
+                </div>
 
-                  <div class="modal-footer">
+                <div class="modal-footer">
 
-                      <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+                    <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
 
-                      <a id="invGuardar" class="btn btn_sh btn-sm" href="javascript: validarGuardar();" role="button">Guardar</a>
+                    <a id="invGuardar" class="btn btn_sh btn-sm" href="javascript: validarGuardar();"
+                        role="button">Guardar</a>
 
-                      <a id="invGuardando" class="btn btn_sh btn-sm disabled" style="display: none;" href="#" role="button">
+                    <a id="invGuardando" class="btn btn_sh btn-sm disabled" style="display: none;" href="#"
+                        role="button">
 
-                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 
-                          Guardando...
+                        Guardando...
 
-                      </a>
+                    </a>
 
-                  </div>
+                </div>
 
-              </div>
+            </div>
 
-          </div>
+        </div>
 
-      </div>
+    </div>
 
 
 
-      <!---- Modal Editar------->
+    <!---- Modal Editar------->
 
-      <div id="inv_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div id="inv_mod_editar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
+        aria-labelledby="myLargeModalLabel" aria-hidden="true">
 
-          <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg">
 
-              <div class="modal-content">
+            <div class="modal-content">
 
-                  <div class="modal-header">
+                <div class="modal-header">
 
-                      <h5 class="modal-title" id="exampleModalLongTitle">Registro de inventario.</h5>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Registro de inventario.</h5>
 
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 
-                          <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
 
-                      </button>
+                    </button>
 
-                  </div>
+                </div>
 
-                  <div class="modal-body">
+                <div class="modal-body">
 
-                      <form>
+                    <form>
 
-                          <div id="msg_alert_mod" class="alert alert-dark" role="alert" style="display: none;">
+                        <div id="msg_alert_mod" class="alert alert-dark" role="alert" style="display: none;">
 
-                          </div>
+                        </div>
 
-                          <div class="form-group row">
+                        <div class="form-group row">
 
-                              <div class="form-group col-md-3 backText">
+                            <div class="form-group col-md-3 backText">
 
-                                  <input type="number" class="form-control" id="inv_ide" name="inv_e" campo="Id" placeholder="id" onchange='removec(this)'>
+                                <input type="number" class="form-control" id="inv_ide" name="inv_e" campo="Id"
+                                    placeholder="id" onchange='removec(this)'>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-3 backText">
+                            <div class="form-group col-md-3 backText">
 
-                                  <input type="number" class="form-control" id="inv_sedee" name="inv_e" campo="Sede" placeholder="Sede" onchange='removec(this)'>
+                                <input type="number" class="form-control" id="inv_sedee" name="inv_e" campo="Sede"
+                                    placeholder="Sede" onchange='removec(this)'>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-6">
+                            <div class="form-group col-md-6">
 
-                                  <select class="form-control" id="inv_inse" name="inv_e" campo="Insumo" onchange='removec(this), Get_InsiumoXId(this, "#inv_unidad")' disabled>
+                                <select class="form-control" id="inv_inse" name="inv_e" campo="Insumo"
+                                    onchange='removec(this), Get_InsiumoXId(this, "#inv_unidad")' disabled>
 
-                                      <option selected value=''>Seleccione Insumo</option>
+                                    <option selected value=''>Seleccione Insumo</option>
 
-                                  </select>
+                                </select>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-3">
+                            <div class="form-group col-md-3">
 
-                                  <input type="number" class="form-control" id="inv_cante" name="inv_e" campo="Cantidad" placeholder="Cantidad" onchange='removec(this)'>
+                                <input type="number" class="form-control" id="inv_cante" name="inv_e" campo="Cantidad"
+                                    placeholder="Cantidad" onchange='removec(this)'>
 
-                              </div>
+                            </div>
 
-                              <div class="form-group col-md-3">
+                            <div class="form-group col-md-3">
 
-                                  <input type="text" class="form-control" id="inv_unidade" name="inv_e" campo="Unidad" placeholder="Unidad" onchange='removec(this)' readonly='readonly'>
+                                <input type="text" class="form-control" id="inv_unidade" name="inv_e" campo="Unidad"
+                                    placeholder="Unidad" onchange='removec(this)' readonly='readonly'>
 
-                              </div>
+                            </div>
 
-                          </div>
+                        </div>
 
-                      </form>
+                    </form>
 
-                  </div>
+                </div>
 
-                  <div class="modal-footer">
+                <div class="modal-footer">
 
-                      <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
+                    <a class="btn btn-danger btn-sm" href="#" role="button" data-dismiss="modal">Cancelar</a>
 
-                      <a id="invActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();" role="button">Guardar</a>
+                    <a id="invActualizar" class="btn btn_sh btn-sm" href="javascript: validarActualizar();"
+                        role="button">Guardar</a>
 
-                      <a id="invActualizando" class="btn btn_sh btn-sm disabled backText" href="#" role="button">
+                    <a id="invActualizando" class="btn btn_sh btn-sm disabled backText" href="#" role="button">
 
-                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 
-                          Guardando...
+                        Guardando...
 
-                      </a>
+                    </a>
 
-                  </div>
+                </div>
 
-              </div>
+            </div>
 
-          </div>
+        </div>
 
-      </div>
+    </div>
 
 </body>
-

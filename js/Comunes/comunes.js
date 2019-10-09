@@ -124,16 +124,14 @@ function Get_InsumosSel(select) {
 function Get_InsiumoXId(select, input) {
 
   var id = $(select).val();
-  var dataserver = id + "| data"
-  var dataserverb = window.btoa(dataserver);
-  var insumos = {
-    "insumo": dataserverb
-  };
+
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Insumos.php',
-    data: insumos,
+    type: 'GET',
+    url: 'Api/v1/Insumos.php/id/'+id,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $(input).val(response.Respuesta[0].nomSI_unidad);

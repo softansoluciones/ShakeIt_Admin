@@ -39,96 +39,94 @@ if (isset($_SERVER['HTTP_AUTHTOKEN'])) {
     $token_ = "noauth";
 }
 
-//$tokenres = $GLOBALS['token']->get_TokenEstado($token_);
-//    if ($tokenres[0]['estado'] != 1) {
-//        $GLOBALS['res']->Respuesta = 28;
-//        $GLOBALS['res']->Mensaje = "Usuario no autorizado.";
-//        echo json_encode($GLOBALS['res']);
-//        exit();
-//    } 
-        
-        switch ($metodo) {
-            case 'GET':
-        
-                if ($accion != null) {
-                    if ($accion == "lista") {
-                        GetUsuarios();
-                    } elseif ($accion == "id") {
-                        GetUsuariosXId($param1);
-                    }elseif ($accion == "documento") {
-                        GetUsuariosXDocumento($param1);
-                    } elseif ($accion == "nombre") {
-                        GetUsuariosXNombre();
-                    }else {
-                        $GLOBALS['res']->Respuesta = 0;
-                        $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
-                        echo json_encode($GLOBALS['res']);
-                    }
-                } else {
-                    $GLOBALS['res']->Respuesta = 0;
-                    $GLOBALS['res']->Mensaje = "No se ha detectado acción";
-                    echo json_encode($GLOBALS['res']);
-                }
-                break;
-        
-            case 'POST':
-        
-                if ($accion == "guardar") {
-                    SaveUsuarios();
-                }elseif ($accion == "actualizar") {
-                    UpdateUsuarios($param1);
-                }elseif ($accion == "login") {
-                    LoginUsuario();
-                } else {
-                    $GLOBALS['res']->Respuesta = 0;
-                    $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
-                    echo json_encode($GLOBALS['res']);
-                }
-                break;
-        
-            case 'PUT':
-        
-                $GLOBALS['res']->Respuesta = 0;
-                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
-                echo json_encode($GLOBALS['res']);
-        
-                break;
-        
-            case 'DELETE':
-                
-            if ($accion == "eliminar") {
-                DeleteUsuarios($param1);
+
+switch ($metodo) {
+    case 'GET':
+
+        if ($accion != null) {
+            if ($accion == "lista") {
+                $GLOBALS['token']->tokenV($token_);
+                GetUsuarios();
+            } elseif ($accion == "id") {
+                $GLOBALS['token']->tokenV($token_);
+                GetUsuariosXId($param1);
+            } elseif ($accion == "documento") {
+                $GLOBALS['token']->tokenV($token_);
+                GetUsuariosXDocumento($param1);
+            } elseif ($accion == "nombre") {
+                $GLOBALS['token']->tokenV($token_);
+                GetUsuariosXNombre();
             } else {
                 $GLOBALS['res']->Respuesta = 0;
                 $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
                 echo json_encode($GLOBALS['res']);
             }
-        
-                break;
-        
-            default:
-                $GLOBALS['res']->Respuesta = 0;
-                $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
-                echo json_encode($GLOBALS['res']);
-                break;
-        }
-    
-    
-
-    function GetUsuarios() {
-
-        $resultado = $GLOBALS['datos']->get_Usuarios();
-
-        if ($resultado != 0) {
-
-            $GLOBALS['res']->Respuesta = $resultado;
-            $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
-            echo json_encode($GLOBALS['res']);
         } else {
             $GLOBALS['res']->Respuesta = 0;
-            $GLOBALS['res']->Mensaje = "No existe información.";
+            $GLOBALS['res']->Mensaje = "No se ha detectado acción";
             echo json_encode($GLOBALS['res']);
         }
+        break;
+
+    case 'POST':
+
+        if ($accion == "guardar") {
+            $GLOBALS['token']->tokenV($token_);
+            SaveUsuarios();
+        } elseif ($accion == "actualizar") {
+            $GLOBALS['token']->tokenV($token_);
+            UpdateUsuarios($param1);
+        } elseif ($accion == "login") {
+            LoginUsuario();
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+            echo json_encode($GLOBALS['res']);
+        }
+        break;
+
+    case 'PUT':
+
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+        echo json_encode($GLOBALS['res']);
+
+        break;
+
+    case 'DELETE':
+
+        if ($accion == "eliminar") {
+            $GLOBALS['token']->tokenV($token_);
+            DeleteUsuarios($param1);
+        } else {
+            $GLOBALS['res']->Respuesta = 0;
+            $GLOBALS['res']->Mensaje = "Acción no existe o no está soportada por el servicio";
+            echo json_encode($GLOBALS['res']);
+        }
+
+        break;
+
+    default:
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Método no soportado por el servicio";
+        echo json_encode($GLOBALS['res']);
+        break;
+}
+
+function GetUsuarios() {
+
+    $resultado = $GLOBALS['datos']->get_Usuarios();
+
+    if ($resultado != 0) {
+
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información obtenida con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "No existe información.";
+        echo json_encode($GLOBALS['res']);
+    }
 }
 
 function GetUsuariosXUsuario($Usuario) {
@@ -149,7 +147,7 @@ function GetUsuariosXUsuario($Usuario) {
 
 function GetUsuariosXId($id) {
 
-    $resultado = $GLOBALS['datos']->get_Usuario($id); 
+    $resultado = $GLOBALS['datos']->get_Usuario($id);
 
     if ($resultado != 0) {
 
@@ -165,7 +163,7 @@ function GetUsuariosXId($id) {
 
 function GetUsuariosXDocumento($documento) {
 
-    $resultado = $GLOBALS['datos']->get_UsuarioXDoc($documento); 
+    $resultado = $GLOBALS['datos']->get_UsuarioXDoc($documento);
 
     if ($resultado != 0) {
 
@@ -204,62 +202,62 @@ function SaveUsuarios() {
     $nom = $_POST['nombres_usuario'];
     $ape = $_POST['apellidos_usuario'];
     $tel = $_POST['telefono_usuario'];
-    $email =$_POST['email_usuario'];
+    $email = $_POST['email_usuario'];
     $pass = $_POST['password_usuario'];
     $tipo = $_POST['tipo_usuario'];
     $estado = $_POST['estado_usuario'];
 
-        $resultado = $GLOBALS['datos']->insert_Usuario($doc, $nom, $ape, $tel, $email, $pass, $tipo, $estado);
+    $resultado = $GLOBALS['datos']->insert_Usuario($doc, $nom, $ape, $tel, $email, $pass, $tipo, $estado);
 
-        if ($resultado != 0) {
+    if ($resultado != 0) {
 
-            $GLOBALS['res']->Respuesta = $resultado;
-            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
-            echo json_encode($GLOBALS['res']);
-        } else {
-            $GLOBALS['res']->Respuesta = 0;
-            $GLOBALS['res']->Mensaje = "Error al registrar información.";
-            echo json_encode($GLOBALS['res']);
-        }
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Error al registrar información.";
+        echo json_encode($GLOBALS['res']);
+    }
 }
 
 function UpdateUsuarios($id) {
-    
+
     $doc = $_POST['documento_usuario'];
     $nom = $_POST['nombres_usuario'];
     $ape = $_POST['apellidos_usuario'];
     $tel = $_POST['telefono_usuario'];
-    $email =$_POST['email_usuario'];
+    $email = $_POST['email_usuario'];
     $pass = $_POST['password_usuario'];
     $tipo = $_POST['tipo_usuario'];
     $estado = $_POST['estado_usuario'];
 
-        $resultado = $GLOBALS['datos']->update_Usuario($id, $doc, $nom, $ape, $tel, $email, $pass, $tipo, $estado);
+    $resultado = $GLOBALS['datos']->update_Usuario($id, $doc, $nom, $ape, $tel, $email, $pass, $tipo, $estado);
 
-        if ($resultado != 0) {
+    if ($resultado != 0) {
 
-            $GLOBALS['res']->Respuesta = $resultado;
-            $GLOBALS['res']->Mensaje = "Información registrada con éxito";
-            echo json_encode($GLOBALS['res']);
-        } else {
-            $GLOBALS['res']->Respuesta = 0;
-            $GLOBALS['res']->Mensaje = "Error al registrar información.";
-            echo json_encode($GLOBALS['res']);
-        }
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información registrada con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Error al registrar información.";
+        echo json_encode($GLOBALS['res']);
+    }
 }
 
 function DeleteUsuarios($id) {
 
-        $resultado = $GLOBALS['datos']->delete_Usuario($id);
+    $resultado = $GLOBALS['datos']->delete_Usuario($id);
 
-        if ($resultado != 0) {
+    if ($resultado != 0) {
 
-            $GLOBALS['res']->Respuesta = $resultado;
-            $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
-            echo json_encode($GLOBALS['res']);
-        } else {
-            $GLOBALS['res']->Respuesta = 0;
-            $GLOBALS['res']->Mensaje = "Error al eliminar información.";
-            echo json_encode($GLOBALS['res']);
-        }
+        $GLOBALS['res']->Respuesta = $resultado;
+        $GLOBALS['res']->Mensaje = "Información eliminada con éxito";
+        echo json_encode($GLOBALS['res']);
+    } else {
+        $GLOBALS['res']->Respuesta = 0;
+        $GLOBALS['res']->Mensaje = "Error al eliminar información.";
+        echo json_encode($GLOBALS['res']);
+    }
 }

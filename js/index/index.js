@@ -99,7 +99,6 @@ function sesionUs(idus, nomus, apeus, tipus, nomtipus) {
   sessionStorage.setItem("nom_user", nomus + " " + apeus);
   sessionStorage.setItem("tipo_user", tipus);
   sessionStorage.setItem("nomtipo_user", nomtipus);
-
   window.location = 'principal.html';
 }
 

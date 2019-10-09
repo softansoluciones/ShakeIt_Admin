@@ -1,6 +1,7 @@
 var userltip = parseInt(sessionStorage.getItem("tipo_user"))
 var GlobalUserid = parseInt(sessionStorage.getItem("id_user"))
 var Globalmodulo = sessionStorage.getItem("modulo");
+var Gustoken = sessionStorage.getItem("token");
 
 function user_data() {
 
@@ -12,7 +13,7 @@ function user_data() {
 function get_modulo() {
   verificacionI();
   var modulo = sessionStorage.getItem("modulo");
- 
+
   switch (modulo) {
     case "1":
       Vista_Reportes()
@@ -38,18 +39,18 @@ function get_modulo() {
     case "6":
       Vista_UsuarioInfo()
       break;
-      case "7":
-        Vista_Sedes()
-        break;
-        case "8":
-          Vista_Recursos()
-          break;
-          case "9":
-            Vista_Alertas()
-            break;
-             case "10":
-            Vista_Parametrizador()
-            break;
+    case "7":
+      Vista_Sedes()
+      break;
+    case "8":
+      Vista_Recursos()
+      break;
+    case "9":
+      Vista_Alertas()
+      break;
+    case "10":
+      Vista_Parametrizador()
+      break;
     default:
       if (userltip == 4) {
         Vista_Inventario()
@@ -193,7 +194,7 @@ function ActualizarPagina() {
 }
 
 function menuXUsuario() {
-  $("a[name ='menup']").each(function() {
+  $("a[name ='menup']").each(function () {
 
     var usertype = $(this).data("usertype");
     if (userltip == 4 && usertype != 2) {
@@ -205,18 +206,18 @@ function menuXUsuario() {
 
 function removeActive() {
 
-  $(".active_nav").each(function() {
+  $(".active_nav").each(function () {
     $(this).removeClass("active_nav");
   });
 
-  $(".active_nav2").each(function() {
+  $(".active_nav2").each(function () {
     $(this).removeClass("active_nav2");
   });
 
 }
 
 function hideSubmenu() {
-  $("div[name ='sub_menu']").each(function() {
+  $("div[name ='sub_menu']").each(function () {
     $(this).hide("fast");
   });
 
@@ -229,11 +230,15 @@ function menuPan() {
 
   var panpos = $(window).width();
   if ($("#menupan").position().left >= panpos) {
-      $("#menupan").animate({left: '0%'});
-      $("body").addClass('overbody');
+    $("#menupan").animate({
+      left: '0%'
+    });
+    $("body").addClass('overbody');
   } else {
-      $("#menupan").animate({left: '100%'});
-      $("body").removeClass('overbody');
+    $("#menupan").animate({
+      left: '100%'
+    });
+    $("body").removeClass('overbody');
 
   }
 
@@ -243,11 +248,8 @@ function pc() {
 
   var device = navigator.userAgent
 
-  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i))
-  {
-  } else
-  {
-      window.location = '../ShakeIt_Admin/inicio';
+  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i)) {} else {
+    window.location = '../ShakeIt_Admin/inicio';
   }
 
 }
@@ -256,8 +258,7 @@ function movil() {
 
   var device = navigator.userAgent
 
-  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i))
-  {
+  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i)) {
     window.location = '../ShakeIt_Admin/inicioM';
   }
 }
@@ -266,12 +267,10 @@ function redireccionLogin() {
 
   var device = navigator.userAgent
 
-  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i))
-  {
+  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i)) {
     window.location = '../ShakeIt_Admin/loginM';
-  } else
-  {
-      window.location = '../ShakeIt_Admin/login';
+  } else {
+    window.location = '../ShakeIt_Admin/login';
   }
 
 }
@@ -280,17 +279,16 @@ function redireccionInicio() {
 
   var device = navigator.userAgent
 
-  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i))
-  {
+  if (device.match(/Iphone/i) || device.match(/Ipod/i) || device.match(/Android/i) || device.match(/J2ME/i) || device.match(/BlackBerry/i) || device.match(/iPhone|iPad|iPod/i) || device.match(/Opera Mini/i) || device.match(/IEMobile/i) || device.match(/Mobile/i) || device.match(/Windows Phone/i) || device.match(/windows mobile/i) || device.match(/windows ce/i) || device.match(/webOS/i) || device.match(/palm/i) || device.match(/bada/i) || device.match(/series60/i) || device.match(/nokia/i) || device.match(/symbian/i) || device.match(/HTC/i)) {
     window.location = '../ShakeIt_Admin/inicioM';
-  } else
-  {
-      window.location = '../ShakeIt_Admin/inicio';
+  } else {
+    window.location = '../ShakeIt_Admin/inicio';
   }
 
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
+  Create_TokenUser(GlobalUserid);
   verificacionI();
   user_data();
   get_modulo();

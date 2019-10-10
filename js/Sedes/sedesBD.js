@@ -2,14 +2,13 @@ function Load_Sedes() {
 
   $('#modal_msg').modal('hide');
 
-  var sedes = {
-    "sedes": "sedes"
-  };
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Sedes.php',
-    data: sedes,
+    url: 'Api/v1/Sedes.php/lista',
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $('#tab_sedeBody').html('')
@@ -47,17 +46,14 @@ function get_sedexnom() {
 
   var nom = $('#sede_nomg').val();
 
-  var dataserver = nom + '|data'
-  var dataserverb = window.btoa(dataserver);
-  var sedes = {
-    "sedexnom": dataserverb
-  };
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Sedes.php',
+    type: 'GET',
+    url: 'Api/v1/Sedes.php/nombre/'+nom,
     data: sedes,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#msg_alert_modG").html('<p>Ya existe sede con el nombre </p>' + nom);
@@ -84,83 +80,15 @@ function get_sedexnom() {
   });
 }
 
-function insert_sedes() {
-
-  var nit = $('#sede_nitg').val();
-  var nom = $('#sede_nomg').val();
-  var dir = $('#sede_dirg').val();
-  var mun = $('#sede_mung').val();
-  var tel1 = $('#sede_tel1g').val();
-  var tel2 = $('#sede_tel2g').val();
-  var tel3 = $('#sede_tel3g').val();
-  var long = $('#sede_longg').val();
-  var lat = $('#sede_latg').val();
-
-  var dataserver = nit + '|' + nom + '|' + dir + '|' + mun + '|' + tel1 + '|' + tel2 + '|' + tel3 + '|' + long + '|' + lat
-  var dataserverb = window.btoa(dataserver);
-  var sedes = {
-    "insertar": dataserverb
-  };
-
-  $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Sedes.php',
-    data: sedes,
-    dataType: 'json',
-    success: function(response) {
-      if (response.Respuesta != 0) {
-        $("#sede_mod_guardar").modal("hide");
-        $("#btns").html("<a class='btn btn-danger btn-sm' href='javascript: Vista_Sedes()' role='button'>Aceptar</a>");
-        $("#msg").html("<center><p>" + response.Mensaje + "</p></center>");
-        $('#modal_msg').modal({
-          backdrop: 'static',
-          keyboard: true,
-          show: true
-        })
-      } else {
-        $("#sede_mod_guardar").modal("hide");
-        $("#sedeGuardar").show()
-        $("#sedeGuardando").hide()
-        $("#btns").html("<a class='btn btn-danger btn-sm' data-dismiss='modal' aria-label='Close' role='button'>Aceptar</a>");
-        $("#msg").html("<center><p>" + response.Mensaje + "</p></center>");
-        $('#modal_msg').modal({
-          backdrop: 'static',
-          keyboard: true,
-          show: true
-        })
-      }
-    },
-    beforeSend: function() {
-      $("#sedeGuardar").hide()
-      $("#sedeGuardando").show()
-    }
-  }).fail(function(jqXHR, textStatus, errorThrown) {
-    $("#sede_mod_guardar").modal("hide");
-    $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
-    $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
-    $("#modal_msg").modal({
-      backdrop: 'static',
-      keyboard: true,
-      show: true
-    });
-    $("#sedeGuardar").show()
-    $("#sedeGuardando").hide()
-  });
-}
-
 function show_Sede(id) {
 
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var sede = {
-    "sede": dataserverb
-  };
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Sedes.php',
-    data: sede,
+    type: 'GET',
+    url: 'Api/v1/Sedes.php/id/'+id,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $('#sede_ide').val(response.Respuesta[0].id_sede);
@@ -204,6 +132,79 @@ function show_Sede(id) {
   });
 }
 
+function insert_sedes() {
+
+  var nit = $('#sede_nitg').val();
+  var nom = $('#sede_nomg').val();
+  var dir = $('#sede_dirg').val();
+  var mun = $('#sede_mung').val();
+  var tel1 = $('#sede_tel1g').val();
+  var tel2 = $('#sede_tel2g').val();
+  var tel3 = $('#sede_tel3g').val();
+  var long = $('#sede_longg').val();
+  var lat = $('#sede_latg').val();
+
+  var sedes = {
+    "nit_sede": nit,
+    "nombre_sede": nom,
+    "direccion_sede": dir,
+    "municipio_sede": mun,
+    "tel1_sede": tel1,
+    "tel2_sede": tel2,
+    "tel3_sede": tel3,
+    "longitud_sede": long,
+    "latitud_sede": lat,
+  };
+
+  $.ajax({
+    type: 'POST',
+    url: 'Api/v1/Sedes.php/guardar',
+    data: sedes,
+    dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
+    success: function(response) {
+      if (response.Respuesta != 0) {
+        $("#sede_mod_guardar").modal("hide");
+        $("#btns").html("<a class='btn btn-danger btn-sm' href='javascript: Vista_Sedes()' role='button'>Aceptar</a>");
+        $("#msg").html("<center><p>" + response.Mensaje + "</p></center>");
+        $('#modal_msg').modal({
+          backdrop: 'static',
+          keyboard: true,
+          show: true
+        })
+      } else {
+        $("#sede_mod_guardar").modal("hide");
+        $("#sedeGuardar").show()
+        $("#sedeGuardando").hide()
+        $("#btns").html("<a class='btn btn-danger btn-sm' data-dismiss='modal' aria-label='Close' role='button'>Aceptar</a>");
+        $("#msg").html("<center><p>" + response.Mensaje + "</p></center>");
+        $('#modal_msg').modal({
+          backdrop: 'static',
+          keyboard: true,
+          show: true
+        })
+      }
+    },
+    beforeSend: function() {
+      $("#sedeGuardar").hide()
+      $("#sedeGuardando").show()
+    }
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    $("#sede_mod_guardar").modal("hide");
+    $("#btns").html("<input data-dismiss='modal' aria-label='Close' class='btn btn-primary m-r-1em' value='Aceptar'/>");
+    $("#msg").html("<center><p>" + jqXHR + " " + textStatus + " " + errorThrown + "</center>");
+    $("#modal_msg").modal({
+      backdrop: 'static',
+      keyboard: true,
+      show: true
+    });
+    $("#sedeGuardar").show()
+    $("#sedeGuardando").hide()
+  });
+}
+
 function update_sedes() {
 
   var id = $('#sede_ide').val();
@@ -217,17 +218,26 @@ function update_sedes() {
   var long = $('#sede_longe').val();
   var lat = $('#sede_late').val();
 
-  var dataserver = id + '|' + nit + '|' + nom + '|' + dir + '|' + mun + '|' + tel1 + '|' + tel2 + '|' + tel3 + '|' + long + '|' + lat
-  var dataserverb = window.btoa(dataserver);
   var sedes = {
-    "actualizar": dataserverb
+    "nit_sede": nit,
+    "nombre_sede": nom,
+    "direccion_sede": dir,
+    "municipio_sede": mun,
+    "tel1_sede": tel1,
+    "tel2_sede": tel2,
+    "tel3_sede": tel3,
+    "longitud_sede": long,
+    "latitud_sede": lat,
   };
 
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Sedes.php',
+    url: 'Api/v1/Sedes.php/actualizar/'+id,
     data: sedes,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#sede_mod_editar").modal("hide");

@@ -5,14 +5,14 @@ function Load_Usuarios() {
 
   var userltip = parseInt(sessionStorage.getItem("tipo_user"))
   var userlid = parseInt(sessionStorage.getItem("id_user"))
-  var usuarios = {
-    "usuarios": "usuarios"
-  };
+  
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Usuarios.php',
-    data: usuarios,
+    url: 'Api/v1/Usuarios.php/lista',
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $('#tab_userBody').html('')
@@ -85,17 +85,13 @@ function verificarUs() {
 
   doc = $('#us_docg').val()
 
-  var dataserver = doc + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var usuario = {
-    "usuarioxdoc": dataserverb
-  };
-
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Usuarios.php',
-    data: usuario,
+    url: 'Api/v1/Usuarios.php/documento/'+doc,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $('#us_docg').addClass("is-invalid");
@@ -130,20 +126,28 @@ function insert_Usuarios() {
   var pass = $('#us_docg').val();
   var tipo = $('#us_tipog').val();
   var estado = 2;
-
-  var dataserver = doc + '|' + nom + '|' + ape + '|' + tel + '|' + email + '|' + pass + '|' + tipo + '|' + estado
-  var dataserverb = window.btoa(dataserver);
+  
   var usuario = {
-    "insertar": dataserverb
-  };
+    
+    "documento_usuario": doc,
+    "nombres_usuario": nom,
+    "apellidos_usuario": ape,
+    "telefono_usuario": tel,
+    "email_usuario": email,
+    "password_usuario": pass,
+    "tipo_usuario": tipo,
+    "estado_usuario": estado
 
-  console.log(dataserverb);
+  };
 
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Usuarios.php',
+    url: 'Api/v1/Usuarios.php/guardar',
     data: usuario,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#user_mod_guardar").modal("hide");
@@ -188,18 +192,13 @@ function insert_Usuarios() {
 
 function show_Usuario(id) {
 
-  var modulo = sessionStorage.getItem("modulo");
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var usuario = {
-    "usuarioxid": dataserverb
-  };
-
   $.ajax({
     type: 'GET',
-    url: 'Api/v1/Usuarios.php',
-    data: usuario,
+    url: 'Api/v1/Usuarios.php/id/'+id,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#msg_alert_modE").hide();
@@ -212,7 +211,7 @@ function show_Usuario(id) {
         $("#us_tele").val(response.Respuesta[0].tel_usuario);
         $("#us_emaile").val(response.Respuesta[0].email_usuario);
         $("#us_passe").val(response.Respuesta[0].pass_usuario);
-        if (modulo != "6") {
+        if (nGlobalmodulo != "6") {
           $("#us_oldpasse").val(response.Respuesta[0].pass_usuario);
           $("#us_oldpasse").hide()
         } else {
@@ -255,7 +254,7 @@ function show_Usuario(id) {
 }
 
 function update_Usuarios() {
-debugger
+
   var id = $('#us_ide').val();
   var doc = $('#us_doce').val();
   var nom = $('#us_nome').val();
@@ -274,19 +273,28 @@ debugger
   var tipo = $('#us_tipoe').val();
   var estado = $('#us_estadoe').val();;
 
-  var dataserver = id + '|' + doc + '|' + nom + '|' + ape + '|' + tel + '|' + email + '|' + pass + '|' + tipo + '|' + estado
-  var dataserverb = window.btoa(dataserver);
+  
   var usuario = {
-    "actualizar": dataserverb
-  };
+    
+    "documento_usuario": doc,
+    "nombres_usuario": nom,
+    "apellidos_usuario": ape,
+    "telefono_usuario": tel,
+    "email_usuario": email,
+    "password_usuario": pass,
+    "tipo_usuario": tipo,
+    "estado_usuario": estado
 
-  console.log(dataserverb);
+  };
 
   $.ajax({
     type: 'POST',
-    url: 'Api/v1/Usuarios.php',
+    url: 'Api/v1/Usuarios.php/actualizar/'+id,
     data: usuario,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#user_mod_editar").modal("hide");
@@ -338,17 +346,13 @@ debugger
 
 function delete_Usuarios(id) {
 
-  var dataserver = id + '|' + "Dato"
-  var dataserverb = window.btoa(dataserver);
-  var usuario = {
-    "eliminar": dataserverb
-  };
-
   $.ajax({
-    type: 'POST',
-    url: 'Api/v1/Usuarios.php',
-    data: usuario,
+    type: 'DELETE',
+    url: 'Api/v1/Usuarios.php/eliminar/'+id,
     dataType: 'json',
+    headers: {
+      "authtoken": sessionStorage.getItem("token")
+    },
     success: function(response) {
       if (response.Respuesta != 0) {
         $("#user_mod_editar").modal("hide");

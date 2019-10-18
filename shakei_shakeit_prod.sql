@@ -2,10 +2,10 @@
 -- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 08, 2019 at 11:23 PM
--- Server version: 8.0.15
--- PHP Version: 7.3.3
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 15-10-2019 a las 18:37:31
+-- Versión del servidor: 8.0.15
+-- Versión de PHP: 7.3.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,12 +19,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sdes`
+-- Base de datos: `sdes`
 --
 
 DELIMITER $$
 --
--- Procedures
+-- Procedimientos
 --
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Alertas_Add` (IN `nom` VARCHAR(100), IN `des` VARCHAR(100), IN `us` INT)  BEGIN
 if  us = 0 then
@@ -215,6 +215,18 @@ SET
 WHERE `id_caja` = id AND `sede_caja` = sede;
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Categorias_Add` (IN `NOMBRE` VARCHAR(100), IN `TIPO` INT)  BEGIN
+
+INSERT INTO categorias
+(nomcategoria,
+tipcategoria)
+VALUES
+(
+NOMBRE,
+TIPO);
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Categorias_Get` ()  BEGIN
 select
 categorias.idcategoria as id,
@@ -238,6 +250,16 @@ categorias.nomcategoria
 from categorias
 where
 categorias.tipcategoria != 1;
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Categorias_Update` (IN `ID` INT, IN `NOMBRE` VARCHAR(100), IN `TIPO` INT)  BEGIN
+
+UPDATE categorias
+SET
+nomcategoria = NOMBRE,
+tipcategoria = TIPO
+WHERE idcategoria = ID;
+
 END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Clientes_Add` (IN `nom` VARCHAR(100), IN `ape` VARCHAR(100), IN `dir` VARCHAR(100), IN `barr` VARCHAR(100), IN `mun` INT, IN `tel` DOUBLE, IN `us` VARCHAR(100), IN `pass` VARCHAR(1000), IN `email` VARCHAR(1000), IN `nac` DATETIME, IN `registro` VARCHAR(50), IN `fecha` DATETIME)  BEGIN
@@ -368,11 +390,404 @@ SET
 WHERE `id_cliente` = id;
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsArchivos_Add` (IN `PATH_` VARCHAR(1000), IN `POSICION` INT, IN `IDENCONTENIDO` VARCHAR(100))  BEGIN
+
+INSERT INTO cms_archivos
+(path_archivo,
+posicion_archivo,
+fk_idencontenido)
+VALUES
+(PATH_,
+POSICION,
+IDENCONTENIDO);
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsArchivos_Delete` (IN `ID` INT)  BEGIN
+
+DELETE FROM cms_archivos
+WHERE
+cms_archivos.id_archivo = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsArchivos_Get` ()  BEGIN
+
+SELECT cms_archivos.id_archivo,
+    cms_archivos.path_archivo,
+    cms_archivos.posicion_archivo,
+    cms_archivos.fk_idencontenido,
+    cms_contenido.titulo_cms,
+    cms_contenido.fk_estado,
+    cat_estados.nom_estado
+FROM cms_archivos
+INNER JOIN cms_contenido ON cms_contenido.iden_cms = cms_archivos.fk_idencontenido
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+ORDER BY cms_archivos.id_archivo ASC;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsArchivos_GetXContenido` (IN `ID` INT)  BEGIN
+
+SELECT cms_archivos.id_archivo,
+    cms_archivos.path_archivo,
+    cms_archivos.posicion_archivo,
+    cms_archivos.fk_idencontenido,
+    cms_contenido.titulo_cms,
+    cms_contenido.fk_estado,
+    cat_estados.nom_estado
+FROM cms_archivos
+INNER JOIN cms_contenido ON cms_contenido.iden_cms = cms_archivos.fk_idencontenido
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+WHERE cms_contenido.id_cms = ID
+ORDER BY cms_archivos.id_archivo ASC;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsArchivos_GetXId` (IN `ID` INT)  BEGIN
+
+SELECT cms_archivos.id_archivo,
+    cms_archivos.path_archivo,
+    cms_archivos.posicion_archivo,
+    cms_archivos.fk_idencontenido,
+    cms_contenido.titulo_cms,
+    cms_contenido.fk_estado,
+    cat_estados.nom_estado
+FROM cms_archivos
+INNER JOIN cms_contenido ON cms_contenido.iden_cms = cms_archivos.fk_idencontenido
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+WHERE cms_archivos.id_archivo = ID
+ORDER BY cms_archivos.id_archivo ASC;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsCategorias_Get` ()  BEGIN
+
+SELECT cms_categorias.id_categoria as id,
+    cms_categorias.nom_categoria as nom
+FROM cms_categorias;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsSecciones_Add` (IN `NOMBRE` VARCHAR(100))  BEGIN
+
+INSERT INTO cms_seccion
+(nom_seccion)
+VALUES
+(NOMBRE);
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsSecciones_Delete` (IN `ID` INT)  BEGIN
+
+DELETE FROM cms_seccion
+WHERE cms_seccion.id_seccion = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `CmsSecciones_GetSel` ()  BEGIN
+
+SELECT cms_seccion.id_seccionas id,
+    cms_seccion.nom_seccion as nom
+FROM cms_seccion;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_Add` (IN `TITULO` VARCHAR(200), IN `CONTENIDO` VARCHAR(5600), IN `INFOADICIONAL` VARCHAR(1000), IN `INFOEXTRA` VARCHAR(1000), IN `PATH` VARCHAR(100), IN `FECHA` DATETIME, IN `TCONTENIDO` INT, IN `SECCION` INT, IN `JERARQUIA` INT, IN `ESTADO` INT, IN `AMBIENTE` INT, IN `CATEGORIA` INT)  BEGIN
+
+declare ident int;
+
+INSERT INTO cms_contenido
+(titulo_cms,
+contenido_cms,
+infoadcional_cms,
+infoextra_cms,
+path_cms,
+fecha_cms,
+fk_tipocontenido,
+fk_seccion,
+jerarquia_cms,
+fk_estado,
+fk_ambiente,
+fk_categoria,
+iden_cms)
+VALUES
+(TITULO,
+CONTENIDO,
+INFOADICIONAL,
+INFOEXTRA,
+PATH,
+FECHA,
+TCONTENIDO,
+SECCION,
+JERARQUIA, 
+ESTADO,
+AMBIENTE,
+CATEGORIA,
+uuid());
+
+select
+count(iden_cms)
+into
+ident
+from
+cms_contenido
+where titulo_cms = TITULO
+and fecha_cms = FECHA
+and fk_tipocontenido = TCONTENIDO
+and fk_categoria = CATEGORIA;
+
+if ident > 0 then
+select
+iden_cms
+from
+cms_contenido
+where titulo_cms = TITULO
+and fecha_cms = FECHA
+and fk_tipocontenido = TCONTENIDO
+and fk_categoria = CATEGORIA;
+end if;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_Delete` (IN `ID` INT)  BEGIN
+
+DELETE FROM cms_contenido
+WHERE id_cms = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_Get` ()  BEGIN
+
+SELECT
+cms_contenido.id_cms,
+cms_contenido.titulo_cms,
+cms_contenido.contenido_cms,
+cms_contenido.infoadcional_cms,
+cms_contenido.infoextra_cms,
+cms_contenido.path_cms,
+date(cms_contenido.fecha_cms) as fecha_cms,
+cms_contenido.fk_tipocontenido,
+cms_tipoconenido.nom_tipoconenido,
+cms_contenido.fk_seccion,
+cms_seccion.nom_seccion,
+cms_contenido.jerarquia_cms,
+cms_contenido.fk_estado,
+cat_estados.nom_estado,
+cms_contenido.fk_ambiente,
+cms_ambientes.nom_ambiente,
+cms_contenido.fk_categoria,
+cms_categorias.nom_categoria
+FROM
+cms_contenido
+INNER JOIN cms_tipoconenido ON cms_tipoconenido.id_tipoconenido = cms_contenido.fk_tipocontenido
+INNER JOIN cms_seccion ON cms_seccion.id_seccion = cms_contenido.fk_seccion
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+INNER JOIN cms_ambientes on cms_ambientes.id_ambiente = cms_contenido.fk_ambiente
+INNER JOIN cms_categorias ON cms_categorias.id_categoria = cms_contenido.fk_categoria;
+
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_GetXCategoria` (IN `CATEGORIA` INT)  BEGIN
+
+SELECT
+cms_contenido.id_cms,
+cms_contenido.titulo_cms,
+cms_contenido.contenido_cms,
+cms_contenido.infoadcional_cms,
+cms_contenido.infoextra_cms,
+cms_contenido.path_cms,
+cms_contenido.fecha_cms,
+cms_contenido.fk_tipocontenido,
+cms_tipoconenido.nom_tipoconenido,
+cms_contenido.fk_seccion,
+cms_seccion.nom_seccion,
+cms_contenido.jerarquia_cms,
+cms_contenido.fk_estado,
+cat_estados.nom_estado,
+cms_contenido.fk_ambiente,
+cms_ambientes.nom_ambiente,
+cms_contenido.fk_categoria,
+cms_categorias.nom_categoria
+FROM
+cms_contenido
+INNER JOIN cms_tipoconenido ON cms_tipoconenido.id_tipoconenido = cms_contenido.fk_tipocontenido
+INNER JOIN cms_seccion ON cms_seccion.id_seccion = cms_contenido.fk_seccion
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+INNER JOIN cms_ambientes on cms_ambientes.id_ambiente = cms_contenido.fk_ambiente
+INNER JOIN cms_categorias ON cms_categorias.id_categoria = cms_contenido.fk_categoria
+WHERE cms_contenido.fk_categoria = CATEGORIA;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_GetXId` (IN `ID` INT)  BEGIN
+
+SELECT
+cms_contenido.id_cms,
+cms_contenido.titulo_cms,
+cms_contenido.contenido_cms,
+cms_contenido.infoadcional_cms,
+cms_contenido.infoextra_cms,
+cms_contenido.path_cms,
+cms_contenido.fecha_cms,
+cms_contenido.fk_tipocontenido,
+cms_tipoconenido.nom_tipoconenido,
+cms_contenido.fk_seccion,
+cms_seccion.nom_seccion,
+cms_contenido.jerarquia_cms,
+cms_contenido.fk_estado,
+cat_estados.nom_estado,
+cms_contenido.fk_ambiente,
+cms_ambientes.nom_ambiente,
+cms_contenido.fk_categoria,
+cms_categorias.nom_categoria
+FROM
+cms_contenido
+INNER JOIN cms_tipoconenido ON cms_tipoconenido.id_tipoconenido = cms_contenido.fk_tipocontenido
+INNER JOIN cms_seccion ON cms_seccion.id_seccion = cms_contenido.fk_seccion
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+INNER JOIN cms_ambientes on cms_ambientes.id_ambiente = cms_contenido.fk_ambiente
+INNER JOIN cms_categorias ON cms_categorias.id_categoria = cms_contenido.fk_categoria
+WHERE cms_contenido.id_cms = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_GetXSeccion` (IN `SECCION` INT)  BEGIN
+
+SELECT
+cms_contenido.id_cms,
+cms_contenido.titulo_cms,
+cms_contenido.contenido_cms,
+cms_contenido.infoadcional_cms,
+cms_contenido.infoextra_cms,
+cms_contenido.path_cms,
+cms_contenido.fecha_cms,
+cms_contenido.fk_tipocontenido,
+cms_tipoconenido.nom_tipoconenido,
+cms_contenido.fk_seccion,
+cms_seccion.nom_seccion,
+cms_contenido.jerarquia_cms,
+cms_contenido.fk_estado,
+cat_estados.nom_estado,
+cms_contenido.fk_ambiente,
+cms_ambientes.nom_ambiente,
+cms_contenido.fk_categoria,
+cms_categorias.nom_categoria
+FROM
+cms_contenido
+INNER JOIN cms_tipoconenido ON cms_tipoconenido.id_tipoconenido = cms_contenido.fk_tipocontenido
+INNER JOIN cms_seccion ON cms_seccion.id_seccion = cms_contenido.fk_seccion
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+INNER JOIN cms_ambientes on cms_ambientes.id_ambiente = cms_contenido.fk_ambiente
+INNER JOIN cms_categorias ON cms_categorias.id_categoria = cms_contenido.fk_categoria
+WHERE cms_contenido.fk_seccion = SECCION;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_GetXTContenido` (IN `TCONTENIDO` INT)  BEGIN
+
+SELECT
+cms_contenido.id_cms,
+cms_contenido.titulo_cms,
+cms_contenido.contenido_cms,
+cms_contenido.infoadcional_cms,
+cms_contenido.infoextra_cms,
+cms_contenido.path_cms,
+cms_contenido.fecha_cms,
+cms_contenido.fk_tipocontenido,
+cms_tipoconenido.nom_tipoconenido,
+cms_contenido.fk_seccion,
+cms_seccion.nom_seccion,
+cms_contenido.jerarquia_cms,
+cms_contenido.fk_estado,
+cat_estados.nom_estado,
+cms_contenido.fk_ambiente,
+cms_ambientes.nom_ambiente,
+cms_contenido.fk_categoria,
+cms_categorias.nom_categoria
+FROM
+cms_contenido
+INNER JOIN cms_tipoconenido ON cms_tipoconenido.id_tipoconenido = cms_contenido.fk_tipocontenido
+INNER JOIN cms_seccion ON cms_seccion.id_seccion = cms_contenido.fk_seccion
+INNER JOIN cat_estados ON cat_estados.id_estado = cms_contenido.fk_estado
+INNER JOIN cms_ambientes on cms_ambientes.id_ambiente = cms_contenido.fk_ambiente
+INNER JOIN cms_categorias ON cms_categorias.id_categoria = cms_contenido.fk_categoria
+WHERE cms_contenido.fk_tipocontenido = TCONTENIDO;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Cms_Update` (IN `ID` INT, IN `TITULO` VARCHAR(100), IN `CONTENIDO` VARCHAR(1000), IN `INFOADICIONAL` VARCHAR(1000), IN `INFOEXTRA` VARCHAR(1000), IN `PATH` VARCHAR(1000), IN `FECHA` DATETIME, IN `TCONTENIDO` INT, IN `SECCION` INT, IN `JERARQUIA` INT, IN `ESTADO` INT, IN `AMBIENTE` INT, IN `CATEGORIA` INT)  BEGIN
+
+UPDATE cms_contenido
+SET
+titulo_cms = TITULO,
+contenido_cms = CONTENIDO,
+infoadcional_cms = INFOADICIONAL,
+infoextra_cms = INFOEXTRA,
+path_cms = PATH,
+fecha_cms = FECHA,
+fk_tipocontenido = TCONTENIDO,
+fk_seccion = SECCION,
+jerarquia_cms = JERARQUIA,
+fk_estado = ESTADO,
+fk_ambiente = AMBIENTE,
+fk_categoria = CATEGORIA
+WHERE id_cms = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Consumo_Add` (IN `NOMBRE` VARCHAR(100))  BEGIN
+
+INSERT INTO consumo
+(nom_consumo)
+VALUES
+(NOMBRE);
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Consumo_GetSel` ()  BEGIN
 SELECT
 consumo.id_consumo as id,
 consumo.nom_consumo as nom
 FROM consumo;
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Consumo_Update` (IN `ID` INT, IN `NOMBRE` VARCHAR(100))  BEGIN
+
+UPDATE consumo
+SET
+nom_consumo = NOMBRE
+WHERE id_consumo = ID;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Contacto_Add` (IN `NOMBRE` VARCHAR(100), IN `EMAIL` VARCHAR(100), IN `MENSAJE` VARCHAR(3000), IN `FECHA` DATE)  BEGIN
+
+INSERT INTO sdes.contacto
+(con_nombre,
+con_email,
+con_mensaje,
+con_fecha,
+con_estado)
+VALUES
+(NOMBRE,
+EMAIL,
+MENSAJE,
+FECHA,
+ESTADO);
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Contacto_Update` (IN `ID` INT, IN `ESTADO` INT)  BEGIN
+
+UPDATE contacto
+SET
+
+con_estado = ESTADO
+WHERE con_id = ID;
+
+
 END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Departamentos_GetSel` ()  BEGIN
@@ -383,12 +798,30 @@ from departamentos
 order by departamentos.nom_departamento asc;
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Entidades_Add` (IN `NOMBRE` VARCHAR(100))  BEGIN
+
+INSERT INTO entidadespago
+(nom_entidad)
+VALUES
+(NOMBRE);
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Entidades_GetSel` ()  BEGIN
 select
 entidadespago.id_entidad as id,
 entidadespago.nom_entidad as nom
 from entidadespago
 order by entidadespago.nom_entidad asc;
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Entidades_Update` (IN `ID` INT, IN `NOMBRE` VARCHAR(100))  BEGIN
+
+UPDATE entidadespago
+SET
+nom_entidad = NOMBRE
+WHERE id_entidad = ID;
+
 END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Estados_GetSel` ()  BEGIN
@@ -755,6 +1188,33 @@ SET
 WHERE `id_inventario` = id AND `sede_inventario` = sede;
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `MedioPago_Add` (IN `NOMBRE` VARCHAR(100))  BEGIN
+
+INSERT INTO medio_pago
+(nommedio_pago)
+VALUES
+(NOMBRE);
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `MedioPago_Get` ()  BEGIN
+
+SELECT medio_pago.idmedio_pago,
+    medio_pago.nommedio_pago
+FROM medio_pago;
+
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `MedioPago_Update` (IN `ID` INT, IN `NOMBRE` VARCHAR(100))  BEGIN
+
+UPDATE medio_pago
+SET
+nommedio_pago = NOMBRE
+WHERE idmedio_pago = ID;
+
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `meses_GetSel` ()  BEGIN
 select distinct
 month(productos_vendidos.fecha_vendido) as id,
@@ -780,6 +1240,17 @@ municipios.nom_municipio as nom
 from municipios
 where municipios.fk_departamento = iddep
 order by municipios.nom_municipio asc;
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Parametrizador_Get` ()  BEGIN
+
+ SELECT parametrizador.id_parametrizador,
+    parametrizador.nombre_parametrizador,
+    parametrizador.fk_estado
+FROM parametrizador
+where parametrizador.fk_estado = 1;
+
+
 END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `ProductosV_Add` (IN `pro` INT, IN `cant` INT, IN `des` DECIMAL(10,2), IN `fac` VARCHAR(45), IN `sede` INT, IN `web` INT)  BEGIN
@@ -1364,6 +1835,14 @@ SET
 WHERE `iden_reporte` = iden and reportes.fk_sede = sede;
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Secciones_Get` ()  BEGIN
+
+SELECT cms_seccion.id_seccion,
+    cms_seccion.nom_seccion
+FROM cms_seccion;
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Sedes_Add` (IN `nit` VARCHAR(100), IN `nom` VARCHAR(45), IN `dir` VARCHAR(100), IN `mun` INT, IN `tel1` DOUBLE, IN `tel2` DOUBLE, IN `tel3` DOUBLE, IN `longi` VARCHAR(100), IN `lat` VARCHAR(100))  BEGIN
 declare nid int;
 select max(sedes.id_sede)+1 into nid
@@ -1495,13 +1974,42 @@ END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Tokens_Get` (IN `IP` VARCHAR(45), IN `SO` VARCHAR(200), IN `BROWSER` VARCHAR(200), IN `USER` VARCHAR(45), IN `FECHA` DATETIME)  BEGIN
 
+declare cant int;
+declare us double;
+
 set @IP = IP;
 set @SO = SO;
 SET @BROWSER = BROWSER;
 SET @USER = USER;
 SET @FECHA = FECHA;
 SET @EXPIRA = concat(date(FECHA), ' 23:59:00');
-SET @HASHTXT = SHA2(concat(@IP, @SO, @BROWSER, @USER, @FECHA, @EXPIRA), 224);
+SET @HASHTXT = SHA2(concat(@IP, @SO, @BROWSER, @USER, @FECHA, @EXPIRA, uuid()), 224);
+
+select
+count(tokens.user_token),
+tokens.user_token
+into
+cant,
+us
+from
+tokens
+where tokens.user_token = @USER
+limit 1;
+
+if cant > 0 then 
+
+UPDATE tokens
+SET
+hash_token = @HASHTXT,
+ip_token = @IP,
+so_token = @SO,
+browser_token = @BROWSER,
+fecha_token = @FECHA,
+expira_token = @EXPIRA,
+fk_estado = 1
+WHERE user_token = @USER;
+
+else
 
 INSERT INTO tokens
 (hash_token,
@@ -1523,6 +2031,7 @@ VALUES
 @EXPIRA,
 1
 );
+end if;
 
 SELECT
 tokens.hash_token as token
@@ -1583,6 +2092,18 @@ end if;
 
 END$$
 
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Unidades_Add` (IN `NOMBRE` VARCHAR(100), IN `SIMBOLO` VARCHAR(50))  BEGIN
+
+INSERT INTO unidades
+(nomSI_unidad,
+simbolo_unidad)
+VALUES
+(NOMBRE,
+SIMBOLO);
+
+
+END$$
+
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `Unidades_Get` ()  BEGIN
 select
 unidades.id_unidad as id,
@@ -1595,6 +2116,16 @@ select
 unidades.id_unidad as id,
 unidades.nomSI_unidad as nom
 from unidades;
+END$$
+
+CREATE DEFINER=`admin`@`localhost` PROCEDURE `Unidades_Update` (IN `ID` INT, IN `NOMBRE` VARCHAR(100), IN `SIMBOLO` VARCHAR(50))  BEGIN
+
+UPDATE unidades
+SET
+nomSI_unidad = NOMBRE,
+simbolo_unidad = SIMBOLO
+WHERE id_unidad = ID;
+
 END$$
 
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `UsuariosTipo_GetSel` ()  BEGIN
@@ -1631,11 +2162,11 @@ usuarios.tipo_usuario,
 usuarios.estado_usuario)
 values
 (documento,
-nombres collate 'utf8_spanish_ci',
-apellidos collate 'utf8_spanish_ci',
-tel collate 'utf8_spanish_ci',
-email collate 'utf8_spanish_ci',
-pass collate 'utf8_spanish_ci',
+nombres,
+apellidos,
+tel,
+email,
+pass,
 tipo,
 estado);
 end if;
@@ -1721,7 +2252,7 @@ usuarios
 inner join usuarios_tipo on usuarios_tipo.idusuarios_tipo = usuarios.tipo_usuario
 inner join comun_estados on comun_estados.idcomun_estado = usuarios.estado_usuario
 where usuarios.doc_usuario = doc
-and usuarios.pass_usuario= pass collate 'utf8_spanish_ci'
+and usuarios.pass_usuario= pass
 /*and (usuarios.estado_usuario = 1 or usuarios.estado_usuario = 3)
 and (usuarios.tipo_usuario = 2 or usuarios.tipo_usuario = 3)*/
 order by usuarios.id_usuario asc;
@@ -2311,7 +2842,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `alertas`
+-- Estructura de tabla para la tabla `alertas`
 --
 
 CREATE TABLE `alertas` (
@@ -2324,7 +2855,7 @@ CREATE TABLE `alertas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `alertas`
+-- Volcado de datos para la tabla `alertas`
 --
 
 INSERT INTO `alertas` (`id_alerta`, `nom_alerta`, `desc_alerta`, `fk_estado`, `fk_usuario`, `fecha_alerta`) VALUES
@@ -2338,7 +2869,7 @@ INSERT INTO `alertas` (`id_alerta`, `nom_alerta`, `desc_alerta`, `fk_estado`, `f
 -- --------------------------------------------------------
 
 --
--- Table structure for table `caja`
+-- Estructura de tabla para la tabla `caja`
 --
 
 CREATE TABLE `caja` (
@@ -2349,7 +2880,7 @@ CREATE TABLE `caja` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `caja`
+-- Volcado de datos para la tabla `caja`
 --
 
 INSERT INTO `caja` (`id_caja`, `valor_caja`, `estado_caja`, `sede_caja`) VALUES
@@ -2359,7 +2890,7 @@ INSERT INTO `caja` (`id_caja`, `valor_caja`, `estado_caja`, `sede_caja`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categorias`
+-- Estructura de tabla para la tabla `categorias`
 --
 
 CREATE TABLE `categorias` (
@@ -2369,7 +2900,7 @@ CREATE TABLE `categorias` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `categorias`
+-- Volcado de datos para la tabla `categorias`
 --
 
 INSERT INTO `categorias` (`idcategoria`, `nomcategoria`, `tipcategoria`) VALUES
@@ -2390,7 +2921,7 @@ INSERT INTO `categorias` (`idcategoria`, `nomcategoria`, `tipcategoria`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clientes`
+-- Estructura de tabla para la tabla `clientes`
 --
 
 CREATE TABLE `clientes` (
@@ -2412,67 +2943,114 @@ CREATE TABLE `clientes` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cms`
+-- Estructura de tabla para la tabla `cms_ambientes`
 --
 
-CREATE TABLE `cms` (
-  `idcms` int(11) NOT NULL,
-  `contenido_cms` varchar(4000) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
-  `titulo_cms` varchar(2000) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
-  `adicional_cms` varchar(1000) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
-  `adicional2_cms` varchar(1000) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
-  `fecha_cms` date DEFAULT NULL,
-  `tcontenido_cms` int(11) NOT NULL,
-  `estado_cms` int(11) DEFAULT NULL
+CREATE TABLE `cms_ambientes` (
+  `id_ambiente` int(11) NOT NULL,
+  `nom_ambiente` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cms_seccion`
+-- Estructura de tabla para la tabla `cms_archivos`
+--
+
+CREATE TABLE `cms_archivos` (
+  `id_archivo` int(11) NOT NULL,
+  `path_archivo` varchar(1000) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `posicion_archivo` int(11) NOT NULL,
+  `fk_idencontenido` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cms_categorias`
+--
+
+CREATE TABLE `cms_categorias` (
+  `id_categoria` int(11) NOT NULL,
+  `nom_categoria` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cms_contenido`
+--
+
+CREATE TABLE `cms_contenido` (
+  `id_cms` int(11) NOT NULL,
+  `titulo_cms` varchar(200) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `contenido_cms` varchar(5600) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `infoadcional_cms` varchar(1000) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `infoextra_cms` varchar(1000) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `path_cms` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `fecha_cms` datetime DEFAULT NULL,
+  `fk_tipocontenido` int(11) DEFAULT NULL,
+  `fk_seccion` int(11) DEFAULT NULL,
+  `jerarquia_cms` int(11) DEFAULT NULL,
+  `fk_estado` int(11) DEFAULT NULL,
+  `fk_ambiente` int(11) DEFAULT '1',
+  `fk_categoria` int(11) DEFAULT NULL,
+  `iden_cms` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cms_seccion`
 --
 
 CREATE TABLE `cms_seccion` (
-  `idseccion` int(11) NOT NULL,
-  `nom_seccion` varchar(200) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
-  `estado_seccion` int(11) NOT NULL
+  `id_seccion` int(11) NOT NULL,
+  `nom_seccion` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cms_tcontenido`
+-- Estructura de tabla para la tabla `cms_tipoconenido`
 --
 
-CREATE TABLE `cms_tcontenido` (
-  `id_tcontenido` int(11) NOT NULL,
-  `nom_tcontenido` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL
+CREATE TABLE `cms_tipoconenido` (
+  `id_tipoconenido` int(11) NOT NULL,
+  `nom_tipoconenido` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comun_estados`
+-- Estructura de tabla para la tabla `comun_estados`
 --
 
 CREATE TABLE `comun_estados` (
   `idcomun_estado` int(11) NOT NULL,
-  `nomcomun_estado` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL
+  `nomcomun_estado` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `fk_tipo` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `comun_estados`
+-- Volcado de datos para la tabla `comun_estados`
 --
 
-INSERT INTO `comun_estados` (`idcomun_estado`, `nomcomun_estado`) VALUES
-(1, 'Activo'),
-(2, 'Inactivo'),
-(3, 'Sin Definir');
+INSERT INTO `comun_estados` (`idcomun_estado`, `nomcomun_estado`, `fk_tipo`) VALUES
+(1, 'Activo', 1),
+(2, 'Inactivo', 1),
+(3, 'Sin Especificar', 1),
+(4, 'Abierta', 4),
+(5, 'Cerrada', 4),
+(6, 'Revisado', 1),
+(7, 'Sin Revisar', 1),
+(8, 'Pendiente', 1),
+(9, 'Contestado', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `consumo`
+-- Estructura de tabla para la tabla `consumo`
 --
 
 CREATE TABLE `consumo` (
@@ -2481,7 +3059,7 @@ CREATE TABLE `consumo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `consumo`
+-- Volcado de datos para la tabla `consumo`
 --
 
 INSERT INTO `consumo` (`id_consumo`, `nom_consumo`) VALUES
@@ -2492,7 +3070,7 @@ INSERT INTO `consumo` (`id_consumo`, `nom_consumo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contacto`
+-- Estructura de tabla para la tabla `contacto`
 --
 
 CREATE TABLE `contacto` (
@@ -2507,7 +3085,7 @@ CREATE TABLE `contacto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `departamentos`
+-- Estructura de tabla para la tabla `departamentos`
 --
 
 CREATE TABLE `departamentos` (
@@ -2516,7 +3094,7 @@ CREATE TABLE `departamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `departamentos`
+-- Volcado de datos para la tabla `departamentos`
 --
 
 INSERT INTO `departamentos` (`id_departamento`, `nom_departamento`) VALUES
@@ -2557,7 +3135,7 @@ INSERT INTO `departamentos` (`id_departamento`, `nom_departamento`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `entidadespago`
+-- Estructura de tabla para la tabla `entidadespago`
 --
 
 CREATE TABLE `entidadespago` (
@@ -2566,7 +3144,7 @@ CREATE TABLE `entidadespago` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `entidadespago`
+-- Volcado de datos para la tabla `entidadespago`
 --
 
 INSERT INTO `entidadespago` (`id_entidad`, `nom_entidad`) VALUES
@@ -2579,29 +3157,55 @@ INSERT INTO `entidadespago` (`id_entidad`, `nom_entidad`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estados_generales`
+-- Estructura de tabla para la tabla `estados_generales`
 --
 
 CREATE TABLE `estados_generales` (
   `idestado` int(11) NOT NULL,
-  `nom_estado` varchar(200) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL
+  `nom_estado` varchar(200) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `fk_tipo` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `estados_generales`
+-- Volcado de datos para la tabla `estados_generales`
 --
 
-INSERT INTO `estados_generales` (`idestado`, `nom_estado`) VALUES
-(1, 'Activo'),
-(2, 'Inactivo'),
-(3, 'Sin Especificar'),
-(4, 'Abierta'),
-(5, 'Cerrada');
+INSERT INTO `estados_generales` (`idestado`, `nom_estado`, `fk_tipo`) VALUES
+(1, 'Activo', 1),
+(2, 'Inactivo', 1),
+(3, 'Sin Especificar', 1),
+(4, 'Abierta', 4),
+(5, 'Cerrada', 4),
+(6, 'Revisado', 1),
+(7, 'Sin Revisar', 1),
+(8, 'Pendiente', 1),
+(9, 'Contestado', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `insumos`
+-- Estructura de tabla para la tabla `estados_tipo`
+--
+
+CREATE TABLE `estados_tipo` (
+  `id_tipo` int(11) NOT NULL,
+  `nombre_tipo` varchar(45) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `estados_tipo`
+--
+
+INSERT INTO `estados_tipo` (`id_tipo`, `nombre_tipo`) VALUES
+(1, 'Comunes'),
+(2, 'Pedidos'),
+(3, 'Mensajes'),
+(4, 'Caja');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `insumos`
 --
 
 CREATE TABLE `insumos` (
@@ -2612,21 +3216,23 @@ CREATE TABLE `insumos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `insumos`
+-- Volcado de datos para la tabla `insumos`
 --
 
 INSERT INTO `insumos` (`id_insumo`, `nom_insumo`, `fk_unidad`, `cantmin_insumo`) VALUES
-(13, 'Oreo', 2, '10.00'),
-(14, 'Cocosette', 2, '10.00'),
-(15, 'Vainilla 9oz', 1, '30.00'),
+(13, 'Oreo', 1, '10.00'),
+(14, 'Cocosette', 1, '20.00'),
+(15, 'Vainilla 9oz', 3, '1.00'),
 (16, 'Leche', 4, '10.00'),
 (17, 'Arequipe', 1, '30.00'),
-(19, 'Ferrero', 1, '30.00');
+(19, 'Ferrero', 1, '30.00'),
+(20, 'M&M', 1, '2.00'),
+(21, 'Noggy', 2, '20.00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `insumos_rel`
+-- Estructura de tabla para la tabla `insumos_rel`
 --
 
 CREATE TABLE `insumos_rel` (
@@ -2636,7 +3242,7 @@ CREATE TABLE `insumos_rel` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `insumos_rel`
+-- Volcado de datos para la tabla `insumos_rel`
 --
 
 INSERT INTO `insumos_rel` (`fk_producto`, `fk_insumo`, `insumoUnidad_rel`) VALUES
@@ -2647,7 +3253,7 @@ INSERT INTO `insumos_rel` (`fk_producto`, `fk_insumo`, `insumoUnidad_rel`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `insumos_vendidos`
+-- Estructura de tabla para la tabla `insumos_vendidos`
 --
 
 CREATE TABLE `insumos_vendidos` (
@@ -2662,7 +3268,7 @@ CREATE TABLE `insumos_vendidos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario`
+-- Estructura de tabla para la tabla `inventario`
 --
 
 CREATE TABLE `inventario` (
@@ -2674,11 +3280,11 @@ CREATE TABLE `inventario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `inventario`
+-- Volcado de datos para la tabla `inventario`
 --
 
 INSERT INTO `inventario` (`id_inventario`, `fk_insumo`, `cantidad_inventario`, `fecha_inventario`, `sede_inventario`) VALUES
-(24, 17, '5000.00', '2019-06-15 10:16:56', 2),
+(24, 17, '6000.00', '2019-10-09 12:18:26', 2),
 (25, 17, '5000.00', '2019-06-15 10:16:57', 3),
 (26, 17, '5000.00', '2019-06-15 10:16:57', 5),
 (27, 17, '5000.00', '2019-06-15 10:16:57', 1),
@@ -2696,7 +3302,7 @@ INSERT INTO `inventario` (`id_inventario`, `fk_insumo`, `cantidad_inventario`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario_dia`
+-- Estructura de tabla para la tabla `inventario_dia`
 --
 
 CREATE TABLE `inventario_dia` (
@@ -2711,7 +3317,7 @@ CREATE TABLE `inventario_dia` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `inventario_dia`
+-- Volcado de datos para la tabla `inventario_dia`
 --
 
 INSERT INTO `inventario_dia` (`id_inventario`, `fk_insumo`, `cantidad1_inventario`, `fecha1_inventario`, `cantidad2_inventario`, `fecha2_inventario`, `fecha_inventario`, `fk_inventarioiden`) VALUES
@@ -2724,7 +3330,7 @@ INSERT INTO `inventario_dia` (`id_inventario`, `fk_insumo`, `cantidad1_inventari
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario_identificador`
+-- Estructura de tabla para la tabla `inventario_identificador`
 --
 
 CREATE TABLE `inventario_identificador` (
@@ -2736,7 +3342,7 @@ CREATE TABLE `inventario_identificador` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `inventario_identificador`
+-- Volcado de datos para la tabla `inventario_identificador`
 --
 
 INSERT INTO `inventario_identificador` (`id_identificador`, `iden_identificador`, `fk_sede`, `fk_estado`, `fecha_identificador`) VALUES
@@ -2748,7 +3354,7 @@ INSERT INTO `inventario_identificador` (`id_identificador`, `iden_identificador`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario_movimientos`
+-- Estructura de tabla para la tabla `inventario_movimientos`
 --
 
 CREATE TABLE `inventario_movimientos` (
@@ -2762,7 +3368,7 @@ CREATE TABLE `inventario_movimientos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `medio_pago`
+-- Estructura de tabla para la tabla `medio_pago`
 --
 
 CREATE TABLE `medio_pago` (
@@ -2771,7 +3377,7 @@ CREATE TABLE `medio_pago` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `medio_pago`
+-- Volcado de datos para la tabla `medio_pago`
 --
 
 INSERT INTO `medio_pago` (`idmedio_pago`, `nommedio_pago`) VALUES
@@ -2781,7 +3387,7 @@ INSERT INTO `medio_pago` (`idmedio_pago`, `nommedio_pago`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `meses`
+-- Estructura de tabla para la tabla `meses`
 --
 
 CREATE TABLE `meses` (
@@ -2790,7 +3396,7 @@ CREATE TABLE `meses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `meses`
+-- Volcado de datos para la tabla `meses`
 --
 
 INSERT INTO `meses` (`id_mes`, `nom_mes`) VALUES
@@ -2810,7 +3416,7 @@ INSERT INTO `meses` (`id_mes`, `nom_mes`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `movimientos`
+-- Estructura de tabla para la tabla `movimientos`
 --
 
 CREATE TABLE `movimientos` (
@@ -2825,7 +3431,7 @@ CREATE TABLE `movimientos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `movimientos_concepto`
+-- Estructura de tabla para la tabla `movimientos_concepto`
 --
 
 CREATE TABLE `movimientos_concepto` (
@@ -2836,7 +3442,7 @@ CREATE TABLE `movimientos_concepto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `movimientos_tipo`
+-- Estructura de tabla para la tabla `movimientos_tipo`
 --
 
 CREATE TABLE `movimientos_tipo` (
@@ -2847,7 +3453,7 @@ CREATE TABLE `movimientos_tipo` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `municipios`
+-- Estructura de tabla para la tabla `municipios`
 --
 
 CREATE TABLE `municipios` (
@@ -2858,7 +3464,7 @@ CREATE TABLE `municipios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `municipios`
+-- Volcado de datos para la tabla `municipios`
 --
 
 INSERT INTO `municipios` (`id_municipio`, `nom_municipio`, `fk_estado`, `fk_departamento`) VALUES
@@ -3966,7 +4572,19 @@ INSERT INTO `municipios` (`id_municipio`, `nom_municipio`, `fk_estado`, `fk_depa
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pedidos`
+-- Estructura de tabla para la tabla `parametrizador`
+--
+
+CREATE TABLE `parametrizador` (
+  `id_parametrizador` int(11) NOT NULL,
+  `nombre_parametrizador` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `fk_estado` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pedidos`
 --
 
 CREATE TABLE `pedidos` (
@@ -3981,7 +4599,7 @@ CREATE TABLE `pedidos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pedidos_productos`
+-- Estructura de tabla para la tabla `pedidos_productos`
 --
 
 CREATE TABLE `pedidos_productos` (
@@ -3994,7 +4612,7 @@ CREATE TABLE `pedidos_productos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `productos`
+-- Estructura de tabla para la tabla `productos`
 --
 
 CREATE TABLE `productos` (
@@ -4010,7 +4628,7 @@ CREATE TABLE `productos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `productos`
+-- Volcado de datos para la tabla `productos`
 --
 
 INSERT INTO `productos` (`id_producto`, `nom_producto`, `nomG_producto`, `precio_producto`, `mprima_producto`, `comision_producto`, `fk_categoria`, `descripcion_producto`, `imagen_producto`) VALUES
@@ -4018,8 +4636,8 @@ INSERT INTO `productos` (`id_producto`, `nom_producto`, `nomG_producto`, `precio
 (2, '9oz Vainilla', 'Vainilla', 5000, 2500, 2500, 10, 'Algo, algo.', 'prod-malteadas.jpg'),
 (3, '14oz Chocolate', NULL, 7000, 3500, 3500, 10, NULL, NULL),
 (4, '9oz Chocolate', NULL, 5000, 2500, 2500, 10, NULL, NULL),
-(5, '14oz ChocoVainilla', NULL, 7000, 3500, 3500, 10, NULL, NULL),
-(6, '9oz ChocoVainilla', NULL, 5000, 2500, 2500, 10, NULL, NULL),
+(5, '14oz ChocoVainilla', 'Choco Vainilla', 7000, 3500, 3500, 10, 'Choco Vainilla', '2019_10_09_5_10.jpg'),
+(6, '9oz ChocoVainilla', 'choco', 5000, 2500, 2500, 10, 'choco', '2019_10_09_6_10.jpg'),
 (7, 'Nucita en polvo', NULL, 500, 250, 250, 1, NULL, NULL),
 (8, 'Milo en polvo', NULL, 500, 250, 250, 1, NULL, NULL),
 (9, 'Canela', NULL, 500, 250, 250, 1, NULL, NULL),
@@ -4164,13 +4782,12 @@ INSERT INTO `productos` (`id_producto`, `nom_producto`, `nomG_producto`, `precio
 (1001, '2x1 Malteada Brownie', NULL, 10000, 5000, 5000, 11, NULL, NULL),
 (1002, '2x1 Milkshake Twix', NULL, 14000, 7000, 7000, 11, NULL, NULL),
 (1003, 'Especial Mujer', NULL, 7000, 3500, 3500, 0, NULL, NULL),
-(1004, 'a', 'a', 1, NULL, NULL, 1, 'hhj', NULL),
-(1005, 'aA', 'a', 1, NULL, NULL, 1, 'kjnkj', NULL);
+(1004, 'a', 'a', 1, NULL, NULL, 1, 'hhj', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `productos_vendidos`
+-- Estructura de tabla para la tabla `productos_vendidos`
 --
 
 CREATE TABLE `productos_vendidos` (
@@ -4187,7 +4804,7 @@ CREATE TABLE `productos_vendidos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reportes`
+-- Estructura de tabla para la tabla `reportes`
 --
 
 CREATE TABLE `reportes` (
@@ -4199,7 +4816,7 @@ CREATE TABLE `reportes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `reportes`
+-- Volcado de datos para la tabla `reportes`
 --
 
 INSERT INTO `reportes` (`id_reportes`, `iden_reporte`, `val_reporte`, `fk_sede`, `fecha_reporte`) VALUES
@@ -4208,7 +4825,7 @@ INSERT INTO `reportes` (`id_reportes`, `iden_reporte`, `val_reporte`, `fk_sede`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sedes`
+-- Estructura de tabla para la tabla `sedes`
 --
 
 CREATE TABLE `sedes` (
@@ -4226,7 +4843,7 @@ CREATE TABLE `sedes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `sedes`
+-- Volcado de datos para la tabla `sedes`
 --
 
 INSERT INTO `sedes` (`id_sede`, `nit_sede`, `nom_sede`, `dir_sede`, `fk_municipio`, `tel1_sede`, `tel2_sede`, `tel3_sede`, `long_sede`, `lat_sede`, `iden_sede`) VALUES
@@ -4236,12 +4853,13 @@ INSERT INTO `sedes` (`id_sede`, `nit_sede`, `nom_sede`, `dir_sede`, `fk_municipi
 (4, NULL, 'Shake It Monteria', 'Carrera 1 # 31-36 Centro', 573, 7861064, 3136633552, 7861064, NULL, NULL, 'shsed4'),
 (5, NULL, 'Shake It Santa Marta', 'Cra. 12 # 26B - 130 Bavaria', 877, 4321844, 3022523964, 0, NULL, NULL, 'shsed5'),
 (6, NULL, 'Shake It Barranquilla', 'a', 88, 1, 1, 1, '1', '1', 'shsed6'),
-(7, '12345678-9', 'Shake It Bogotá', 'Calle', 107, 12345678, 12345678, 0, '0', '0', 'shsed7');
+(7, '12345678-9', 'Shake It Bogotá', 'Calle 128A', 107, 12345678, 12345678, 0, '0', '0', 'shsed7'),
+(10, '2554-s4', 'Sede Nueva', '123', 107, 1234567890, 1234567890, 0, '0', '0', 'shsed8');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tokens`
+-- Estructura de tabla para la tabla `tokens`
 --
 
 CREATE TABLE `tokens` (
@@ -4257,19 +4875,21 @@ CREATE TABLE `tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `tokens`
+-- Volcado de datos para la tabla `tokens`
 --
 
 INSERT INTO `tokens` (`id_token`, `hash_token`, `ip_token`, `so_token`, `browser_token`, `user_token`, `fecha_token`, `expira_token`, `fk_estado`) VALUES
 (265, '7edac89bde36f87775574f5bc4d462e4f9d395beb7e28a0a1b3a7814', '::1', 'Unknown OS Platform', 'Unknown Browser', '123456789', '2019-10-03 16:07:14', '2019-10-03 23:59:00', 1),
 (266, 'b67eb8554109d08c1627dc7ce52a65ea70ed7c9155b5bc898a85f3b9', '::1', 'Unknown OS Platform', 'Unknown Browser', '1065626260', '2019-10-04 09:50:23', '2019-10-04 23:59:00', 1),
 (267, 'e0948e7909efd008ab5045bd2f44f5f39d0fd319fd1eadc857b2aa48', '::1', 'Unknown OS Platform', 'Unknown Browser', '1065626260', '2019-10-07 11:57:22', '2019-10-07 23:59:00', 2),
-(268, 'fae5d3d25d135f219d614e0c63e3d3bf8c21da78f351f48368cba74a', '::1', 'Unknown OS Platform', 'Unknown Browser', '1065626260', '2019-10-08 16:01:10', '2019-10-08 23:59:00', 1);
+(268, 'fae5d3d25d135f219d614e0c63e3d3bf8c21da78f351f48368cba74a', '::1', 'Unknown OS Platform', 'Unknown Browser', '1065626260', '2019-10-08 16:25:35', '2019-10-08 23:59:00', 1),
+(269, '5e6dfa051568d88957f90aaf9f20ee13e3f58f3313c7e2efab3a91db', '::1', 'Windows 10', 'Chrome', '5', '2019-10-10 10:22:33', '2019-10-10 23:59:00', 1),
+(270, 'd2343962ec558acc77ea770a971120a66a73c8045bb5a748c0e82396', '::1', 'Windows 10', 'Chrome', 'NaN', '2019-10-09 10:28:02', '2019-10-09 23:59:00', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `unidades`
+-- Estructura de tabla para la tabla `unidades`
 --
 
 CREATE TABLE `unidades` (
@@ -4279,7 +4899,7 @@ CREATE TABLE `unidades` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `unidades`
+-- Volcado de datos para la tabla `unidades`
 --
 
 INSERT INTO `unidades` (`id_unidad`, `nomSI_unidad`, `simbolo_unidad`) VALUES
@@ -4292,7 +4912,7 @@ INSERT INTO `unidades` (`id_unidad`, `nomSI_unidad`, `simbolo_unidad`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -4308,7 +4928,7 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `usuarios`
+-- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `doc_usuario`, `nom_usuario`, `ape_usuario`, `tel_usuario`, `email_usuario`, `pass_usuario`, `tipo_usuario`, `estado_usuario`) VALUES
@@ -4316,14 +4936,14 @@ INSERT INTO `usuarios` (`id_usuario`, `doc_usuario`, `nom_usuario`, `ape_usuario
 (2, 26945921, 'Administrador', 'Admin', '3003278236', 'info@shakeitcol.com', '2c961e49e2787c5275d25962ffb94f96', 2, 3),
 (3, 49790251, 'Martha', 'Avendaño', NULL, NULL, '49790251', 1, 1),
 (4, 1007390247, 'Estefanía', 'Petro', NULL, NULL, '1007390247', 1, 2),
-(5, 1065626260, 'Andrés Felipe', 'Estrada Mendoza', '3175025547', 'afestradam@gmail.com', '5324b730af8f1404896a9f759131ed53', 3, 3),
+(5, 1065626260, 'Andrés', 'Estrada Mendoza', '3175025547', 'afestradam@gmail.com', '5324b730af8f1404896a9f759131ed53', 3, 3),
 (6, 1065660499, 'Giselle', 'Quintero', NULL, NULL, '1065660499', 1, 2),
 (7, 1096199504, 'Katerine', 'Zarate', NULL, NULL, '1096199504', 1, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios_tipo`
+-- Estructura de tabla para la tabla `usuarios_tipo`
 --
 
 CREATE TABLE `usuarios_tipo` (
@@ -4332,7 +4952,7 @@ CREATE TABLE `usuarios_tipo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `usuarios_tipo`
+-- Volcado de datos para la tabla `usuarios_tipo`
 --
 
 INSERT INTO `usuarios_tipo` (`idusuarios_tipo`, `nom_tipo`) VALUES
@@ -4344,7 +4964,7 @@ INSERT INTO `usuarios_tipo` (`idusuarios_tipo`, `nom_tipo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ventas`
+-- Estructura de tabla para la tabla `ventas`
 --
 
 CREATE TABLE `ventas` (
@@ -4361,426 +4981,486 @@ CREATE TABLE `ventas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `alertas`
+-- Indices de la tabla `alertas`
 --
 ALTER TABLE `alertas`
   ADD PRIMARY KEY (`id_alerta`);
 
 --
--- Indexes for table `caja`
+-- Indices de la tabla `caja`
 --
 ALTER TABLE `caja`
   ADD PRIMARY KEY (`id_caja`,`sede_caja`),
   ADD UNIQUE KEY `sede_caja_UNIQUE` (`sede_caja`);
 
 --
--- Indexes for table `categorias`
+-- Indices de la tabla `categorias`
 --
 ALTER TABLE `categorias`
   ADD PRIMARY KEY (`idcategoria`);
 
 --
--- Indexes for table `clientes`
+-- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id_cliente`,`tel_cliente`);
 
 --
--- Indexes for table `cms`
+-- Indices de la tabla `cms_ambientes`
 --
-ALTER TABLE `cms`
-  ADD PRIMARY KEY (`idcms`);
+ALTER TABLE `cms_ambientes`
+  ADD PRIMARY KEY (`id_ambiente`);
 
 --
--- Indexes for table `cms_seccion`
+-- Indices de la tabla `cms_archivos`
+--
+ALTER TABLE `cms_archivos`
+  ADD PRIMARY KEY (`id_archivo`);
+
+--
+-- Indices de la tabla `cms_categorias`
+--
+ALTER TABLE `cms_categorias`
+  ADD PRIMARY KEY (`id_categoria`);
+
+--
+-- Indices de la tabla `cms_contenido`
+--
+ALTER TABLE `cms_contenido`
+  ADD PRIMARY KEY (`id_cms`);
+
+--
+-- Indices de la tabla `cms_seccion`
 --
 ALTER TABLE `cms_seccion`
-  ADD PRIMARY KEY (`idseccion`);
+  ADD PRIMARY KEY (`id_seccion`);
 
 --
--- Indexes for table `cms_tcontenido`
+-- Indices de la tabla `cms_tipoconenido`
 --
-ALTER TABLE `cms_tcontenido`
-  ADD PRIMARY KEY (`id_tcontenido`);
+ALTER TABLE `cms_tipoconenido`
+  ADD PRIMARY KEY (`id_tipoconenido`);
 
 --
--- Indexes for table `comun_estados`
+-- Indices de la tabla `comun_estados`
 --
 ALTER TABLE `comun_estados`
   ADD PRIMARY KEY (`idcomun_estado`);
 
 --
--- Indexes for table `consumo`
+-- Indices de la tabla `consumo`
 --
 ALTER TABLE `consumo`
   ADD PRIMARY KEY (`id_consumo`);
 
 --
--- Indexes for table `contacto`
+-- Indices de la tabla `contacto`
 --
 ALTER TABLE `contacto`
   ADD PRIMARY KEY (`con_id`);
 
 --
--- Indexes for table `departamentos`
+-- Indices de la tabla `departamentos`
 --
 ALTER TABLE `departamentos`
   ADD PRIMARY KEY (`id_departamento`);
 
 --
--- Indexes for table `entidadespago`
+-- Indices de la tabla `entidadespago`
 --
 ALTER TABLE `entidadespago`
   ADD PRIMARY KEY (`id_entidad`);
 
 --
--- Indexes for table `estados_generales`
+-- Indices de la tabla `estados_generales`
 --
 ALTER TABLE `estados_generales`
   ADD PRIMARY KEY (`idestado`);
 
 --
--- Indexes for table `insumos`
+-- Indices de la tabla `estados_tipo`
+--
+ALTER TABLE `estados_tipo`
+  ADD PRIMARY KEY (`id_tipo`);
+
+--
+-- Indices de la tabla `insumos`
 --
 ALTER TABLE `insumos`
   ADD PRIMARY KEY (`id_insumo`);
 
 --
--- Indexes for table `insumos_rel`
+-- Indices de la tabla `insumos_rel`
 --
 ALTER TABLE `insumos_rel`
   ADD PRIMARY KEY (`fk_producto`,`fk_insumo`);
 
 --
--- Indexes for table `insumos_vendidos`
+-- Indices de la tabla `insumos_vendidos`
 --
 ALTER TABLE `insumos_vendidos`
   ADD PRIMARY KEY (`id_insumosv`);
 
 --
--- Indexes for table `inventario`
+-- Indices de la tabla `inventario`
 --
 ALTER TABLE `inventario`
   ADD PRIMARY KEY (`id_inventario`,`sede_inventario`);
 
 --
--- Indexes for table `inventario_dia`
+-- Indices de la tabla `inventario_dia`
 --
 ALTER TABLE `inventario_dia`
   ADD PRIMARY KEY (`id_inventario`);
 
 --
--- Indexes for table `inventario_identificador`
+-- Indices de la tabla `inventario_identificador`
 --
 ALTER TABLE `inventario_identificador`
   ADD PRIMARY KEY (`id_identificador`),
   ADD UNIQUE KEY `iden_identificador_UNIQUE` (`iden_identificador`);
 
 --
--- Indexes for table `inventario_movimientos`
+-- Indices de la tabla `inventario_movimientos`
 --
 ALTER TABLE `inventario_movimientos`
   ADD PRIMARY KEY (`idmovimiento`);
 
 --
--- Indexes for table `medio_pago`
+-- Indices de la tabla `medio_pago`
 --
 ALTER TABLE `medio_pago`
   ADD PRIMARY KEY (`idmedio_pago`);
 
 --
--- Indexes for table `meses`
+-- Indices de la tabla `meses`
 --
 ALTER TABLE `meses`
   ADD PRIMARY KEY (`id_mes`);
 
 --
--- Indexes for table `movimientos`
+-- Indices de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
   ADD PRIMARY KEY (`id_movimiento`);
 
 --
--- Indexes for table `movimientos_concepto`
+-- Indices de la tabla `movimientos_concepto`
 --
 ALTER TABLE `movimientos_concepto`
   ADD PRIMARY KEY (`id_concepto`);
 
 --
--- Indexes for table `movimientos_tipo`
+-- Indices de la tabla `movimientos_tipo`
 --
 ALTER TABLE `movimientos_tipo`
   ADD PRIMARY KEY (`id_tipo`);
 
 --
--- Indexes for table `municipios`
+-- Indices de la tabla `municipios`
 --
 ALTER TABLE `municipios`
   ADD PRIMARY KEY (`id_municipio`);
 
 --
--- Indexes for table `pedidos`
+-- Indices de la tabla `parametrizador`
+--
+ALTER TABLE `parametrizador`
+  ADD PRIMARY KEY (`id_parametrizador`);
+
+--
+-- Indices de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
   ADD PRIMARY KEY (`id_pedido`);
 
 --
--- Indexes for table `pedidos_productos`
+-- Indices de la tabla `pedidos_productos`
 --
 ALTER TABLE `pedidos_productos`
   ADD PRIMARY KEY (`id_producto`);
 
 --
--- Indexes for table `productos`
+-- Indices de la tabla `productos`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id_producto`);
 
 --
--- Indexes for table `productos_vendidos`
+-- Indices de la tabla `productos_vendidos`
 --
 ALTER TABLE `productos_vendidos`
   ADD PRIMARY KEY (`id_vendido`);
 
 --
--- Indexes for table `reportes`
+-- Indices de la tabla `reportes`
 --
 ALTER TABLE `reportes`
   ADD PRIMARY KEY (`id_reportes`);
 
 --
--- Indexes for table `sedes`
+-- Indices de la tabla `sedes`
 --
 ALTER TABLE `sedes`
   ADD PRIMARY KEY (`id_sede`),
   ADD UNIQUE KEY `iden_sede_UNIQUE` (`iden_sede`);
 
 --
--- Indexes for table `tokens`
+-- Indices de la tabla `tokens`
 --
 ALTER TABLE `tokens`
   ADD PRIMARY KEY (`id_token`);
 
 --
--- Indexes for table `unidades`
+-- Indices de la tabla `unidades`
 --
 ALTER TABLE `unidades`
   ADD PRIMARY KEY (`id_unidad`);
 
 --
--- Indexes for table `usuarios`
+-- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id_usuario`);
 
 --
--- Indexes for table `usuarios_tipo`
+-- Indices de la tabla `usuarios_tipo`
 --
 ALTER TABLE `usuarios_tipo`
   ADD PRIMARY KEY (`idusuarios_tipo`);
 
 --
--- Indexes for table `ventas`
+-- Indices de la tabla `ventas`
 --
 ALTER TABLE `ventas`
   ADD PRIMARY KEY (`id_venta`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `alertas`
+-- AUTO_INCREMENT de la tabla `alertas`
 --
 ALTER TABLE `alertas`
   MODIFY `id_alerta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=295;
 
 --
--- AUTO_INCREMENT for table `caja`
+-- AUTO_INCREMENT de la tabla `caja`
 --
 ALTER TABLE `caja`
   MODIFY `id_caja` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `categorias`
+-- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
   MODIFY `idcategoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `clientes`
+-- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `cms`
+-- AUTO_INCREMENT de la tabla `cms_ambientes`
 --
-ALTER TABLE `cms`
-  MODIFY `idcms` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+ALTER TABLE `cms_ambientes`
+  MODIFY `id_ambiente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `cms_seccion`
+-- AUTO_INCREMENT de la tabla `cms_archivos`
+--
+ALTER TABLE `cms_archivos`
+  MODIFY `id_archivo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `cms_categorias`
+--
+ALTER TABLE `cms_categorias`
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `cms_contenido`
+--
+ALTER TABLE `cms_contenido`
+  MODIFY `id_cms` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `cms_seccion`
 --
 ALTER TABLE `cms_seccion`
-  MODIFY `idseccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_seccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `cms_tcontenido`
+-- AUTO_INCREMENT de la tabla `cms_tipoconenido`
 --
-ALTER TABLE `cms_tcontenido`
-  MODIFY `id_tcontenido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+ALTER TABLE `cms_tipoconenido`
+  MODIFY `id_tipoconenido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `comun_estados`
+-- AUTO_INCREMENT de la tabla `comun_estados`
 --
 ALTER TABLE `comun_estados`
-  MODIFY `idcomun_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idcomun_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `consumo`
+-- AUTO_INCREMENT de la tabla `consumo`
 --
 ALTER TABLE `consumo`
   MODIFY `id_consumo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `contacto`
+-- AUTO_INCREMENT de la tabla `contacto`
 --
 ALTER TABLE `contacto`
   MODIFY `con_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `entidadespago`
+-- AUTO_INCREMENT de la tabla `entidadespago`
 --
 ALTER TABLE `entidadespago`
   MODIFY `id_entidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `estados_generales`
+-- AUTO_INCREMENT de la tabla `estados_generales`
 --
 ALTER TABLE `estados_generales`
-  MODIFY `idestado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idestado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `insumos`
+-- AUTO_INCREMENT de la tabla `estados_tipo`
+--
+ALTER TABLE `estados_tipo`
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `insumos`
 --
 ALTER TABLE `insumos`
-  MODIFY `id_insumo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_insumo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `insumos_vendidos`
+-- AUTO_INCREMENT de la tabla `insumos_vendidos`
 --
 ALTER TABLE `insumos_vendidos`
   MODIFY `id_insumosv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
--- AUTO_INCREMENT for table `inventario`
+-- AUTO_INCREMENT de la tabla `inventario`
 --
 ALTER TABLE `inventario`
-  MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
--- AUTO_INCREMENT for table `inventario_dia`
+-- AUTO_INCREMENT de la tabla `inventario_dia`
 --
 ALTER TABLE `inventario_dia`
   MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `inventario_identificador`
+-- AUTO_INCREMENT de la tabla `inventario_identificador`
 --
 ALTER TABLE `inventario_identificador`
   MODIFY `id_identificador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `inventario_movimientos`
+-- AUTO_INCREMENT de la tabla `inventario_movimientos`
 --
 ALTER TABLE `inventario_movimientos`
   MODIFY `idmovimiento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `medio_pago`
+-- AUTO_INCREMENT de la tabla `medio_pago`
 --
 ALTER TABLE `medio_pago`
   MODIFY `idmedio_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `meses`
+-- AUTO_INCREMENT de la tabla `meses`
 --
 ALTER TABLE `meses`
   MODIFY `id_mes` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `movimientos_tipo`
+-- AUTO_INCREMENT de la tabla `movimientos_tipo`
 --
 ALTER TABLE `movimientos_tipo`
   MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pedidos`
+-- AUTO_INCREMENT de la tabla `parametrizador`
+--
+ALTER TABLE `parametrizador`
+  MODIFY `id_parametrizador` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
   MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `pedidos_productos`
+-- AUTO_INCREMENT de la tabla `pedidos_productos`
 --
 ALTER TABLE `pedidos_productos`
   MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `productos`
+-- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
   MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1006;
 
 --
--- AUTO_INCREMENT for table `productos_vendidos`
+-- AUTO_INCREMENT de la tabla `productos_vendidos`
 --
 ALTER TABLE `productos_vendidos`
   MODIFY `id_vendido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
--- AUTO_INCREMENT for table `reportes`
+-- AUTO_INCREMENT de la tabla `reportes`
 --
 ALTER TABLE `reportes`
   MODIFY `id_reportes` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `sedes`
+-- AUTO_INCREMENT de la tabla `sedes`
 --
 ALTER TABLE `sedes`
-  MODIFY `id_sede` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_sede` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `tokens`
+-- AUTO_INCREMENT de la tabla `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `id_token` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=269;
+  MODIFY `id_token` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=271;
 
 --
--- AUTO_INCREMENT for table `unidades`
+-- AUTO_INCREMENT de la tabla `unidades`
 --
 ALTER TABLE `unidades`
   MODIFY `id_unidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `usuarios_tipo`
+-- AUTO_INCREMENT de la tabla `usuarios_tipo`
 --
 ALTER TABLE `usuarios_tipo`
   MODIFY `idusuarios_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `ventas`
+-- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
   MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
